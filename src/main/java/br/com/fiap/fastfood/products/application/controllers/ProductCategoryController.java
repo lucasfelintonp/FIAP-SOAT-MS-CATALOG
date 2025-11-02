@@ -9,27 +9,29 @@ import br.com.fiap.fastfood.products.application.presenters.ProductCategoryPrese
 import br.com.fiap.fastfood.products.domain.entities.ProductCategoryEntity;
 import br.com.fiap.fastfood.products.domain.use_cases.*;
 import br.com.fiap.fastfood.products.infrastructure.interfaces.ProductCategoryDatasource;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public class ProductCategoryController {
-    private final ProductCategoryGateway productCategoryGateway;
+    private final ProductCategoryDatasource productCategoryDatasource;
 
-    public ProductCategoryController(ProductCategoryGateway productCategoryGateway) {
-        this.productCategoryGateway = productCategoryGateway;
+    public ProductCategoryController(ProductCategoryDatasource productCategoryDatasource) {
+        this.productCategoryDatasource = productCategoryDatasource;
     }
 
     public ProductCategoryDTO createProductCategory(CreateProductCategoryDTO productCategoryDTO) {
+        ProductCategoryGateway productCategoryGateway = new ProductCategoryGateway(productCategoryDatasource);
+
         CreateProductCategoryUseCase createProductCategoryUseCase = new CreateProductCategoryUseCase(productCategoryGateway);
 
         ProductCategoryEntity categoryEntity = createProductCategoryUseCase.run(productCategoryDTO);
 
-        return ProductCategoryPresenter.createy(categoryEntity);
+        return ProductCategoryPresenter.create(categoryEntity);
     }
 
     public ProductCategoryDTO getProductCategoryById(Integer categoryId) {
+        ProductCategoryGateway productCategoryGateway = new ProductCategoryGateway(productCategoryDatasource);
+
         GetProductCategoryUseCase getProductCategoryUseCase = new GetProductCategoryUseCase(productCategoryGateway);
 
         ProductCategoryEntity categoryEntity = getProductCategoryUseCase.run(categoryId);
@@ -38,6 +40,8 @@ public class ProductCategoryController {
     }
 
     public List<ProductCategoryDTO> getAllProductCategories() {
+        ProductCategoryGateway productCategoryGateway = new ProductCategoryGateway(productCategoryDatasource);
+
         GetAllProductCategoriesUseCase getAllProductCategoriesUseCase = new GetAllProductCategoriesUseCase(productCategoryGateway);
 
         List<ProductCategoryEntity> categories = getAllProductCategoriesUseCase.run();
@@ -46,6 +50,8 @@ public class ProductCategoryController {
     }
 
     public ProductCategoryDTO updateProductCategory(UpdateProductCategoryDTO productCategoryDTO) {
+        ProductCategoryGateway productCategoryGateway = new ProductCategoryGateway(productCategoryDatasource);
+
         UpdateProductCategoryUseCase updateProductCategoryUseCase = new UpdateProductCategoryUseCase(productCategoryGateway);
 
         ProductCategoryEntity categoryEntity = updateProductCategoryUseCase.run(productCategoryDTO);
@@ -54,6 +60,8 @@ public class ProductCategoryController {
     }
 
     public void deleteProductCategory(Integer categoryId) {
+        ProductCategoryGateway productCategoryGateway = new ProductCategoryGateway(productCategoryDatasource);
+
         DeleteProductCategoryUseCase deleteProductCategoryUseCase = new DeleteProductCategoryUseCase(productCategoryGateway);
 
         deleteProductCategoryUseCase.run(categoryId);
