@@ -7,19 +7,19 @@ import java.util.UUID;
 
 public interface ProductDatasource {
 
-    ProductDTO createProduct(ProductDTO productDTO);
+    ProductDTO create(ProductDTO productDTO);
 
-    ProductDTO getProductById(UUID productId);
+    ProductDTO findById(UUID productId);
 
-    List<ProductDTO> getAllProducts(Integer categoryId);
+    List<ProductDTO> findAll(Integer categoryId);
 
-    List<ProductDTO> getAllProductsByIds(List<UUID> productIds);
+    List<ProductDTO> findAllByIds(List<UUID> productIds);
 
-    ProductDTO updateProduct(ProductDTO productDTO);
+    ProductDTO update(ProductDTO productDTO);
 
-    ProductDTO deleteProduct(UUID productId);
+    ProductDTO delete(UUID productId);
 
-    void disableProduct(UUID productId);
+    void disable(UUID productId);
 
-    void enableProduct(UUID productId);
+    void enable(UUID productId);
 }
