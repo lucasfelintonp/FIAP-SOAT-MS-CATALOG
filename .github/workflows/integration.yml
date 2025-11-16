@@ -61,13 +61,18 @@ jobs:
                   if [ $percent -lt 80 ]; then echo "Coverage ${percent}% is less than required 80%"; exit 1; fi
 
             - name: SonarQube analysis (optional)
-              if: ${{ secrets.SONAR_TOKEN != '' && secrets.SONAR_HOST_URL != '' && secrets.SONAR_PROJECT_KEY != '' }}
+              # Avoid using 'secrets' directly in the workflow 'if' expression (some linters/VSCode may complain).
+              # Instead inject secrets into environment and decide at runtime whether to run Sonar.
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
                   SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
                   SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
               run: |
+                  if [ -z "${SONAR_TOKEN}" ] || [ -z "${SONAR_HOST_URL}" ] || [ -z "${SONAR_PROJECT_KEY}" ]; then
+                    echo "Sonar secrets not configured; skipping SonarQube analysis"
+                    exit 0
+                  fi
                   mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN} || true
                   # Wait for quality gate (polling)
                   echo "Waiting for SonarQube Quality Gate..."

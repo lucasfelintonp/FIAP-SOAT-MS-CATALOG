@@ -1,56 +1,71 @@
 name: Release
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    types: [closed]
+    push:
+        branches: [main]
+    pull_request:
+        types: [closed]
 
 jobs:
-  release:
-    name: Build and Publish Image
-    runs-on: ubuntu-latest
-    # Run only on push to main or when a PR merged into main
-    if: "(github.event_name == 'push' && startsWith(github.ref, 'refs/heads/main')) || (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main')"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    release:
+        name: Build and Publish Image
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-          cache: maven
+            - name: Validate trigger (only proceed on push to main or merged PR into main)
+              run: |
+                  echo "Event: ${{ github.event_name }}"
+                  if [ "${{ github.event_name }}" = "push" ]; then
+                    if [ "${{ github.ref }}" != "refs/heads/main" ]; then
+                      echo "Not a push to main; exiting job.";
+                      exit 0;
+                    fi
+                  elif [ "${{ github.event_name }}" = "pull_request" ]; then
+                    if [ "${{ github.event.pull_request.merged }}" != "true" ] || [ "${{ github.event.pull_request.base.ref }}" != "main" ]; then
+                      echo "PR not merged into main; exiting job.";
+                      exit 0;
+                    fi
+                  else
+                    echo "Unsupported event: ${{ github.event_name }}; exiting job.";
+                    exit 0;
+                  fi
 
-      - name: Build Maven artifact
-        run: mvn -B -DskipTests=true package
+            - name: Set up JDK
+              uses: actions/setup-java@v4
+              with:
+                  distribution: temurin
+                  java-version: "17"
+                  cache: maven
 
-      - name: Determine image tag
-        id: vars
-        run: |
-          # Prefer git tag, fallback to short sha
-          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$TAG" ]; then
-            TAG=$(git rev-parse --short HEAD)
-          fi
-          echo "IMAGE_TAG=$TAG" >> $GITHUB_OUTPUT
+            - name: Build Maven artifact
+              run: mvn -B -DskipTests=true package
 
-      - name: Login to GHCR
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Determine image tag
+              id: vars
+              run: |
+                  # Prefer git tag, fallback to short sha
+                  TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+                  if [ -z "$TAG" ]; then
+                    TAG=$(git rev-parse --short HEAD)
+                  fi
+                  echo "IMAGE_TAG=$TAG" >> $GITHUB_OUTPUT
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/fiap-fastfood-ms-products:${{ steps.vars.outputs.IMAGE_TAG }}
-            ghcr.io/${{ github.repository_owner }}/fiap-fastfood-ms-products:latest
+            - name: Login to GHCR
+              uses: docker/login-action@v2
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
 
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  push: true
+                  tags: |
+                      ghcr.io/${{ github.repository_owner }}/fiap-fastfood-ms-products:${{ steps.vars.outputs.IMAGE_TAG }}
+                      ghcr.io/${{ github.repository_owner }}/fiap-fastfood-ms-products:latest
