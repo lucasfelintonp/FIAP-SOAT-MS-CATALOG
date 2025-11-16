@@ -22,7 +22,7 @@ jobs:
               run: echo "Dependabot is configured via .github/dependabot.yml and runs on schedule; use Dependabot PRs to update deps"
 
             - name: Set up JDK
-              uses: actions/setup-java@v4
+              uses: actions/setup-java@v5
               with:
                   distribution: temurin
                   java-version: ${{ matrix.java }}
