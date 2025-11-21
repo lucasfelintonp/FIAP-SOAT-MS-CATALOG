@@ -19,10 +19,10 @@ public class ProductHandler {
     private final ProductController productController;
 
     public ProductHandler(
-            ProductDatasource productDatasource
+        ProductDatasource productDatasource
     ) {
         this.productController = new ProductController(
-                productDatasource
+            productDatasource
         );
     }
 
@@ -31,13 +31,13 @@ public class ProductHandler {
         ProductDTO createdProduct = productController.create(dto);
 
         return ResponseEntity
-                .status(201)
-                .body(createdProduct);
+            .status(201)
+            .body(createdProduct);
     }
 
     @GetMapping
     public ResponseEntity<List<ProductDTO>> findAll(
-            @RequestParam(value = "categoryId", required = false) Integer categoryId
+        @RequestParam(value = "categoryId", required = false) Integer categoryId
     ) {
         var products = productController.findAll(categoryId);
 
@@ -53,19 +53,19 @@ public class ProductHandler {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductDTO> update(
-            @PathVariable UUID id,
-            @RequestBody @Valid UpdateProductDTO dto
+        @PathVariable UUID id,
+        @RequestBody @Valid UpdateProductDTO dto
     ) {
         ProductDTO updatedProduct = productController.update(
-                new UpdateProductDTO(
-                        id,
-                        dto.name(),
-                        dto.description(),
-                        dto.price(),
-                        dto.isActive(),
-                        dto.imagePath(),
-                        dto.categoryId()
-                )
+            new UpdateProductDTO(
+                id,
+                dto.name(),
+                dto.description(),
+                dto.price(),
+                dto.isActive(),
+                dto.imagePath(),
+                dto.categoryId()
+            )
         );
 
         return ResponseEntity.ok(updatedProduct);
@@ -75,7 +75,7 @@ public class ProductHandler {
     public ResponseEntity<ProductDTO> delete(@PathVariable UUID id) {
         productController.delete(id);
         return ResponseEntity
-                .noContent()
-                .build();
+            .noContent()
+            .build();
     }
 }

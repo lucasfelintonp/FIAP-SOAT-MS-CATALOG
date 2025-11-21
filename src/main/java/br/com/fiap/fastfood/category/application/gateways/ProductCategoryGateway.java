@@ -17,7 +17,7 @@ public class ProductCategoryGateway {
 
     public ProductCategoryEntity create(ProductCategoryEntity category) {
         var result = datasource.create(new CreateProductCategoryDTO(
-                category.name()
+            category.name()
         ));
 
         return mapToProductCategoryEntity(result);
@@ -33,19 +33,19 @@ public class ProductCategoryGateway {
         var result = datasource.findAll();
 
         return result.stream()
-                .map(category -> new ProductCategoryEntity(
-                        category.id(),
-                        category.name()
-                ))
-                .toList();
+            .map(category -> new ProductCategoryEntity(
+                category.id(),
+                category.name()
+            ))
+            .toList();
     }
 
     public ProductCategoryEntity update(ProductCategoryEntity category) {
         var result = datasource.update(
-                new UpdateProductCategoryDTO(
-                        category.id(),
-                        category.name()
-                ));
+            new UpdateProductCategoryDTO(
+                category.id(),
+                category.name()
+            ));
 
         return mapToProductCategoryEntity(result);
     }
@@ -56,8 +56,8 @@ public class ProductCategoryGateway {
 
     private ProductCategoryEntity mapToProductCategoryEntity(ProductCategoryDTO dto) {
         return new ProductCategoryEntity(
-                dto.id(),
-                dto.name()
+            dto.id(),
+            dto.name()
         );
     }
 

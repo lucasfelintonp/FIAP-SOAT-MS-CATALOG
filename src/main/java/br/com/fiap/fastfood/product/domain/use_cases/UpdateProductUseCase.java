@@ -13,16 +13,16 @@ public class UpdateProductUseCase {
 
     public ProductEntity run(UpdateProductDTO productDTO) {
         var productEntity = new ProductEntity(
-                productDTO.id(),
-                productDTO.name(),
-                productDTO.description(),
-                productDTO.price(),
-                productDTO.isActive(),
-                productDTO.imagePath(),
-                productDTO.categoryId(),
-                null,
-                null,
-                null
+            productDTO.id(),
+            productDTO.name(),
+            productDTO.description(),
+            productDTO.price(),
+            productDTO.isActive(),
+            productDTO.imagePath(),
+            productDTO.categoryId(),
+            null,
+            null,
+            null
         );
 
         return productGateway.update(productEntity);

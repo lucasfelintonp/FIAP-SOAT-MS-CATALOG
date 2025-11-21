@@ -13,8 +13,8 @@ public class UpdateProductCategoryUseCase {
 
     public ProductCategoryEntity run(UpdateProductCategoryDTO updateProductCategoryDTO) {
         ProductCategoryEntity categoryEntity = new ProductCategoryEntity(
-                updateProductCategoryDTO.id(),
-                updateProductCategoryDTO.name()
+            updateProductCategoryDTO.id(),
+            updateProductCategoryDTO.name()
         );
 
         return productCategoryGateway.update(categoryEntity);
