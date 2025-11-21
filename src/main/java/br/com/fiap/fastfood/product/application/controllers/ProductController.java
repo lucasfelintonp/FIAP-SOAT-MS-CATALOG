@@ -41,6 +41,16 @@ public class ProductController {
         return ProductPresenter.findAll(products);
     }
 
+    public List<ProductDTO> findAllByIds(List<UUID> productIds) {
+        ProductGateway productGateway = new ProductGateway(productDatasource);
+
+        GetProductsByIdsUseCase getProductsByIdsUseCase = new GetProductsByIdsUseCase(productGateway);
+
+        List<ProductEntity> products = getProductsByIdsUseCase.run(productIds);
+
+        return ProductPresenter.findAll(products);
+    }
+
     public ProductDTO findById(UUID productId) {
         ProductGateway productGateway = new ProductGateway(productDatasource);
 
