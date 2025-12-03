@@ -1,7 +1,6 @@
 package br.com.fiap.fastfood.category.infrastructure.database.adapters;
 
 import br.com.fiap.fastfood.category.application.dtos.CreateProductCategoryDTO;
-import br.com.fiap.fastfood.category.application.dtos.ProductCategoryDTO;
 import br.com.fiap.fastfood.category.application.dtos.UpdateProductCategoryDTO;
 import br.com.fiap.fastfood.category.infrastructure.database.entities.ProductCategoryEntityJPA;
 import br.com.fiap.fastfood.category.infrastructure.database.repositories.ProductCategoryRepository;
@@ -249,7 +248,7 @@ class ProductCategoryAdapterTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("Bebidas", result.get(0).name());
+        assertEquals("Bebidas", result.getFirst().name());
 
         verify(repository, times(1)).findAll();
     }

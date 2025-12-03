@@ -40,7 +40,7 @@ class ProductCategoryHandlerTest {
 
         ResponseEntity<ProductCategoryDTO> response = handler.create(dto);
 
-        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(201, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().id());
         assertEquals("Bebidas", response.getBody().name());
@@ -71,10 +71,10 @@ class ProductCategoryHandlerTest {
 
         ResponseEntity<List<ProductCategoryDTO>> response = handler.getAll();
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals(2, response.getBody().size());
-        assertEquals("Bebidas", response.getBody().get(0).name());
+        assertEquals("Bebidas", response.getBody().getFirst().name());
 
         verify(datasource, times(1)).findAll();
     }
@@ -87,7 +87,7 @@ class ProductCategoryHandlerTest {
 
         ResponseEntity<ProductCategoryDTO> response = handler.getById(2);
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals(2, response.getBody().id());
         assertEquals("Lanches", response.getBody().name());
@@ -113,7 +113,7 @@ class ProductCategoryHandlerTest {
 
         ResponseEntity<ProductCategoryDTO> response = handler.update(3, dto);
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals(3, response.getBody().id());
         assertEquals("Sobremesas", response.getBody().name());
@@ -141,7 +141,7 @@ class ProductCategoryHandlerTest {
 
         ResponseEntity<Void> response = handler.delete(4);
 
-        assertEquals(204, response.getStatusCodeValue());
+        assertEquals(204, response.getStatusCode().value());
 
         verify(datasource, times(1)).findById(4);
         verify(datasource, times(1)).delete(4);
