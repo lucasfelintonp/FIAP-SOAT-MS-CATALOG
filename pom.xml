@@ -33,7 +33,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 		<org.projectlombok.version>1.18.42</org.projectlombok.version>
-		<mockito.version>5.20.0</mockito.version>
+		<mockito.version>5.21.0</mockito.version>
 	</properties>
 
 	<dependencies>
