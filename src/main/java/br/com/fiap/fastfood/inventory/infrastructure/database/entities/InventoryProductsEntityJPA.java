@@ -12,31 +12,23 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "inventory")
+@Table(name = "inventory_products")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InventoryEntityJPA {
+public class InventoryProductsEntityJPA {
 
     @Id
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    @Column(nullable = false, length = 50)
-    private String name;
+    private UUID productId;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "unit_id")
-    private UnitEntityJPA unit;
+    @ManyToOne
+    @JoinColumn(name = "inventory_id")
+    private InventoryEntityJPA inventory;
 
-    @Column(precision = 5, scale = 2)
     private BigDecimal quantity;
-
-    @Column(name = "minimum_quantity", nullable = false, precision = 5, scale = 2)
-    private BigDecimal minimumQuantity;
-
-    @Column(length = 100)
-    private String notes;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -45,5 +37,4 @@ public class InventoryEntityJPA {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
 }

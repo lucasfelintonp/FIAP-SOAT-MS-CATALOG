@@ -5,6 +5,7 @@ import br.com.fiap.fastfood.inventory.application.dtos.GetUnitDTO;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface InventoryDatasource {
 
@@ -13,4 +14,8 @@ public interface InventoryDatasource {
     Optional<GetUnitDTO> findUnitById(Integer unitId);
 
     GetInventoryDTO create(GetInventoryDTO dto);
+
+    GetInventoryDTO getById(UUID id);
+
+    void update(GetInventoryDTO dto);
 }

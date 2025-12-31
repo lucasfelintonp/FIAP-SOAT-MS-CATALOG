@@ -8,6 +8,7 @@ import br.com.fiap.fastfood.inventory.infrastructure.interfaces.InventoryDatasou
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class InventoryGateway {
 
@@ -63,6 +64,36 @@ public class InventoryGateway {
         );
 
         return dtoToInventoryEntity(result);
+    }
+
+    public InventoryEntity getById(UUID id) {
+
+        var result = datasource.getById(id);
+
+        return new InventoryEntity(
+            result.id(),
+            result.name(),
+            new UnitEntity(result.unit().id(), result.unit().name(), result.unit().abbreviation()),
+            result.quantity(),
+            result.minimum_quantity(),
+            result.notes(),
+            result.created_at(),
+            result.updated_at()
+        );
+
+    }
+
+    public void update(InventoryEntity inventory) {
+        datasource.update(new GetInventoryDTO(
+            inventory.getId(),
+            inventory.getName(),
+            new GetUnitDTO(inventory.getUnit().getId(), inventory.getUnit().getName(), inventory.getUnit().getAbbreviation()),
+            inventory.getQuantity(),
+            inventory.getMinimumQuantity(),
+            inventory.getNotes(),
+            inventory.getCreatedAt(),
+            inventory.getUpdatedAt()
+        ));
     }
 
     private InventoryEntity dtoToInventoryEntity(GetInventoryDTO dto) {

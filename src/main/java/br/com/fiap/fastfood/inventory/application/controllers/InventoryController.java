@@ -2,6 +2,7 @@ package br.com.fiap.fastfood.inventory.application.controllers;
 
 import br.com.fiap.fastfood.inventory.application.dtos.CreateInventoryItemDTO;
 import br.com.fiap.fastfood.inventory.application.dtos.GetInventoryDTO;
+import br.com.fiap.fastfood.inventory.application.dtos.ProductsQuantityDTO;
 import br.com.fiap.fastfood.inventory.application.gateways.InventoryGateway;
 import br.com.fiap.fastfood.inventory.application.presenters.InventoryPresenter;
 import br.com.fiap.fastfood.inventory.domain.use_cases.CreateInventoryItemUseCase;
@@ -12,14 +13,14 @@ import java.util.List;
 
 public class InventoryController {
 
-    private final InventoryDatasource inventoryDatasource;
+    private final InventoryDatasource datasource;
 
-    public InventoryController(InventoryDatasource inventoryDatasource) {
-        this.inventoryDatasource = inventoryDatasource;
+    public InventoryController(InventoryDatasource datasource) {
+        this.datasource = datasource;
     }
 
     public List<GetInventoryDTO> searchInventory() {
-        InventoryGateway gateway = new InventoryGateway(inventoryDatasource);
+        InventoryGateway gateway = new InventoryGateway(datasource);
 
         SearchInventoryUseCase searchInventoryUseCase = new SearchInventoryUseCase(gateway);
 
@@ -29,7 +30,7 @@ public class InventoryController {
     }
 
     public GetInventoryDTO createInventoryItem(CreateInventoryItemDTO dto) {
-        InventoryGateway gateway = new InventoryGateway(inventoryDatasource);
+        InventoryGateway gateway = new InventoryGateway(datasource);
 
         CreateInventoryItemUseCase createInventoryItemUseCase = new CreateInventoryItemUseCase(gateway);
 
@@ -37,4 +38,7 @@ public class InventoryController {
 
         return InventoryPresenter.createInventoryDTO(item);
     }
+
+
+
 }

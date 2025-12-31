@@ -4,14 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record GetInventoryDTO(
+public record GetInventoryProductDTO(
     UUID id,
-    String name,
-    GetUnitDTO unit,
+    UUID productId,
+    GetInventoryDTO inventory,
     BigDecimal quantity,
-    BigDecimal minimum_quantity,
-    String notes,
-    LocalDateTime created_at,
-    LocalDateTime updated_at
+    LocalDateTime createdAt,
+    LocalDateTime updatedAt
 ) {
 }

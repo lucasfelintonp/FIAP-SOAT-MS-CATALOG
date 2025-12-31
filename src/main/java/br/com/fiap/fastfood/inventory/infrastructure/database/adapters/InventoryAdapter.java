@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class InventoryAdapter implements InventoryDatasource {
@@ -54,6 +55,21 @@ public class InventoryAdapter implements InventoryDatasource {
         var inventoryItem = inventoryRepository.save(inventoryEntityJPA);
 
         return inventoryEntityToDto(inventoryItem);
+    }
+
+    @Override
+    public GetInventoryDTO getById(UUID id) {
+        var itemJPA = inventoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item de estoque de ID " + id + " não existe"));
+
+        return inventoryEntityToDto(itemJPA);
+    }
+
+    @Override
+    public void update(GetInventoryDTO dto) {
+        var inventoryEntityJPA = dtoToInventoryEntityJPA(dto);
+
+        inventoryRepository.save(inventoryEntityJPA);
     }
 
     private GetInventoryDTO inventoryEntityToDto(InventoryEntityJPA entityJPA) {
