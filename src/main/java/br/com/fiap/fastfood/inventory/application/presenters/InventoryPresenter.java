@@ -17,6 +17,10 @@ public class InventoryPresenter {
             .map(InventoryPresenter::inventoryEntityToDto).toList();
     }
 
+    public static GetInventoryDTO createInventoryDTO(InventoryEntity inventoryItem) {
+        return inventoryEntityToDto(inventoryItem);
+    }
+
     private static GetInventoryDTO inventoryEntityToDto(InventoryEntity inventoryItem) {
         return new GetInventoryDTO(
             inventoryItem.getId(),
