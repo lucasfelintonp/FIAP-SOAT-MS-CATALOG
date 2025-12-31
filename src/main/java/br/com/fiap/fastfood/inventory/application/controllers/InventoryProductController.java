@@ -7,7 +7,7 @@ import br.com.fiap.fastfood.inventory.application.gateways.InventoryProductGatew
 import br.com.fiap.fastfood.inventory.domain.entities.InventoryEntryEntity;
 import br.com.fiap.fastfood.inventory.domain.use_cases.CreateInventoryEntryUseCase;
 import br.com.fiap.fastfood.inventory.domain.use_cases.EnableElegibleProductsUseCase;
-import br.com.fiap.fastfood.inventory.domain.use_cases.GetInventoryByProducts;
+import br.com.fiap.fastfood.inventory.domain.use_cases.DiscountInventoryItemsByProductsUseCase;
 import br.com.fiap.fastfood.inventory.infrastructure.interfaces.InventoryDatasource;
 import br.com.fiap.fastfood.inventory.infrastructure.interfaces.InventoryProductsDatasource;
 import br.com.fiap.fastfood.product.application.gateways.ProductGateway;
@@ -36,8 +36,10 @@ public class InventoryProductController {
         InventoryGateway inventoryGateway = new InventoryGateway(inventoryDatasource);
         ProductGateway productGateway = new ProductGateway(productDatasource);
 
-        GetInventoryByProducts getInventoryByProducts = new GetInventoryByProducts(gateway, inventoryGateway, productGateway);
-        getInventoryByProducts.run(dto);
+        DiscountInventoryItemsByProductsUseCase discountInventoryItemsByProductsUseCase =
+            new DiscountInventoryItemsByProductsUseCase(gateway, inventoryGateway, productGateway);
+
+        discountInventoryItemsByProductsUseCase.run(dto);
     }
 
     public void createInventoryEntry(CreateInventoryEntryDTO dto) {

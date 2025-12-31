@@ -16,26 +16,18 @@ public class InventoryEntryEntity {
 
         this.id = (id != null) ? id : UUID.randomUUID();
 
-        if (inventory == null) {
-            throw new IllegalArgumentException("O item não pode ser nulo para uma Entrada de Estoque.");
-        }
+        if (inventory == null) throw new IllegalArgumentException("O item não pode ser nulo.");
+        if (quantity == null) throw new IllegalArgumentException("A quantidade não pode ser nula.");
+        if (entryDate == null) throw new IllegalArgumentException("A Data de Entrada não pode ser nula.");
 
-        if (quantity == null) {
-            throw new IllegalArgumentException("A quantidade não pode ser nula para uma Entrada de Estoque.");
-        }
+        BigDecimal formattedQuantity = quantity.setScale(2, RoundingMode.HALF_UP);
 
-        quantity = quantity.setScale(2, RoundingMode.HALF_UP);
-
-        if (quantity.precision() > 5 || quantity.scale() > 2) {
-            throw new IllegalArgumentException("A precisão da quantidade não pode exceder 5 dígitos no total, com 2 casas decimais.");
-        }
-
-        if (entryDate == null) {
-            throw new IllegalArgumentException("A Data de Entrada não pode ser nula para uma Entrada de Estoque.");
+        if (formattedQuantity.precision() > 5) {
+            throw new IllegalArgumentException("A precisão da quantidade não pode exceder 5 dígitos no total.");
         }
 
         this.inventory = inventory;
-        this.quantity = quantity;
+        this.quantity = formattedQuantity;
         this.expirationDate = expirationDate;
         this.entryDate = entryDate;
     }
@@ -79,10 +71,12 @@ public class InventoryEntryEntity {
             throw new IllegalArgumentException("A quantidade não pode ser nula para uma Entrada de Estoque.");
         }
 
-        quantity = quantity.setScale(2, RoundingMode.HALF_UP);
-        if (quantity.precision() > 5 || quantity.scale() > 2) {
-            throw new IllegalArgumentException("A precisão da quantidade não pode exceder 5 dígitos no total, com 2 casas decimais.");
+        BigDecimal formattedQuantity = quantity.setScale(2, RoundingMode.HALF_UP);
+
+        if (formattedQuantity.precision() > 5) {
+            throw new IllegalArgumentException("A precisão da quantidade não pode exceder 5 dígitos no total.");
         }
-        this.quantity = quantity;
+
+        this.quantity = formattedQuantity;
     }
 }

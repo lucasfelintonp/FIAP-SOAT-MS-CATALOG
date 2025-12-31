@@ -49,8 +49,11 @@ public class InventoryEntity {
     }
 
     private void validateQuantity(BigDecimal quantity) {
-        if (quantity != null && (quantity.precision() > 5 || quantity.scale() > 2)) {
-            throw new IllegalArgumentException("A precisão da quantidade não pode exceder 5 dígitos no total, com 2 casas decimais.");
+        if (quantity != null) {
+            BigDecimal formatted = quantity.setScale(2, RoundingMode.HALF_UP);
+            if (formatted.precision() > 5) {
+                throw new IllegalArgumentException("A precisão da quantidade não pode exceder 5 dígitos no total.");
+            }
         }
     }
 
