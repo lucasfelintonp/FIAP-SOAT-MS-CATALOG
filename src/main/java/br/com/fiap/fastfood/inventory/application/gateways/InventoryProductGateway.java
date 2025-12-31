@@ -1,17 +1,16 @@
 package br.com.fiap.fastfood.inventory.application.gateways;
 
 
+import br.com.fiap.fastfood.inventory.application.dtos.GetInventoryDTO;
 import br.com.fiap.fastfood.inventory.application.dtos.GetInventoryProductDTO;
 import br.com.fiap.fastfood.inventory.domain.entities.InventoryEntity;
 import br.com.fiap.fastfood.inventory.domain.entities.InventoryProductsEntity;
 import br.com.fiap.fastfood.inventory.domain.entities.UnitEntity;
 import br.com.fiap.fastfood.inventory.infrastructure.interfaces.InventoryProductsDatasource;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.UUID;
 
-@Slf4j
 public class InventoryProductGateway {
 
     private final InventoryProductsDatasource datasource;
@@ -21,59 +20,42 @@ public class InventoryProductGateway {
     }
 
     public List<InventoryProductsEntity> getInventoryProductByProductId(UUID productId) {
-        List<GetInventoryProductDTO> result = datasource.getInventoryProductByProductId(productId);
-
-        return result.stream()
-            .map(dto -> new InventoryProductsEntity(
-                    dto.id(),
-                    dto.productId(),
-                    new InventoryEntity(
-                        dto.inventory().id(),
-                        dto.inventory().name(),
-                        new UnitEntity(
-                            dto.inventory().unit().id(),
-                            dto.inventory().unit().name(),
-                            dto.inventory().unit().abbreviation()
-                        ),
-                        dto.inventory().quantity(),
-                        dto.inventory().minimum_quantity(),
-                        dto.inventory().notes(),
-                        dto.inventory().created_at(),
-                        dto.inventory().updated_at()
-                    ),
-                    dto.quantity(),
-                    dto.createdAt(),
-                    dto.updatedAt()
-                )
-            ).toList();
+        return datasource.getInventoryProductByProductId(productId).stream()
+            .map(this::mapToInventoryProductsEntity)
+            .toList();
     }
 
     public List<InventoryProductsEntity> getInventoryProductByInventoryId(UUID inventoryId) {
-        List<GetInventoryProductDTO> result = datasource.getInventoryProductByInventoryId(inventoryId);
-
-        return result.stream()
-            .map(dto -> new InventoryProductsEntity(
-                    dto.id(),
-                    dto.productId(),
-                    new InventoryEntity(
-                        dto.inventory().id(),
-                        dto.inventory().name(),
-                        new UnitEntity(
-                            dto.inventory().unit().id(),
-                            dto.inventory().unit().name(),
-                            dto.inventory().unit().abbreviation()
-                        ),
-                        dto.inventory().quantity(),
-                        dto.inventory().minimum_quantity(),
-                        dto.inventory().notes(),
-                        dto.inventory().created_at(),
-                        dto.inventory().updated_at()
-                    ),
-                    dto.quantity(),
-                    dto.createdAt(),
-                    dto.updatedAt()
-                )
-            ).toList();
+        return datasource.getInventoryProductByInventoryId(inventoryId).stream()
+            .map(this::mapToInventoryProductsEntity)
+            .toList();
     }
 
+    private InventoryProductsEntity mapToInventoryProductsEntity(GetInventoryProductDTO dto) {
+        return new InventoryProductsEntity(
+            dto.id(),
+            dto.productId(),
+            mapToInventoryEntity(dto.inventory()),
+            dto.quantity(),
+            dto.createdAt(),
+            dto.updatedAt()
+        );
+    }
+
+    private InventoryEntity mapToInventoryEntity(GetInventoryDTO dto) {
+        return new InventoryEntity(
+            dto.id(),
+            dto.name(),
+            new UnitEntity(
+                dto.unit().id(),
+                dto.unit().name(),
+                dto.unit().abbreviation()
+            ),
+            dto.quantity(),
+            dto.minimum_quantity(),
+            dto.notes(),
+            dto.created_at(),
+            dto.updated_at()
+        );
+    }
 }

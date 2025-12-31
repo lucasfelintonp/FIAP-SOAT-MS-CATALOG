@@ -21,22 +21,19 @@ public class EnableElegibleProductsUseCase {
     }
 
     public void run(InventoryEntryEntity entity) {
+
         List<InventoryProductsEntity> relatedProducts = inventoryGateway.getInventoryProductByInventoryId(entity.getInventory().getId());
 
-        for (InventoryProductsEntity product : relatedProducts) {
-            List<InventoryProductsEntity> inventories = inventoryGateway.getInventoryProductByProductId(product.getProductId());
+        relatedProducts.forEach(product -> {
+            List<InventoryProductsEntity> composition = inventoryGateway.getInventoryProductByProductId(product.getProductId());
 
-            boolean allItemsInStock = inventories.stream()
-                .map(inventory -> inventoryGateway.getById(inventory.getInventory().getId()))
-                .allMatch(inv -> inv.getQuantity().compareTo(inv.getMinimumQuantity()) > 0);
+            boolean isElegible = composition.stream()
+                .allMatch(item -> item.getInventory().getQuantity()
+                    .compareTo(item.getInventory().getMinimumQuantity()) > 0);
 
-            if (allItemsInStock) {
+            if (isElegible) {
                 productGateway.enableProduct(product.getProductId());
             }
-
-
-        }
-
+        });
     }
-
 }

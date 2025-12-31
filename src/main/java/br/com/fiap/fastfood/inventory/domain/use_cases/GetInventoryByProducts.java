@@ -11,7 +11,6 @@ import br.com.fiap.fastfood.product.application.gateways.ProductGateway;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 public class GetInventoryByProducts {
 
@@ -31,48 +30,50 @@ public class GetInventoryByProducts {
     }
 
     public void run(List<ProductsQuantityDTO> dtos) {
-
         for (ProductsQuantityDTO dto : dtos) {
-            List<InventoryProductsEntity> inventories = gateway.getInventoryProductByProductId(dto.productId());
 
-            inventories.forEach(inventoryProduct -> {
-                InventoryEntity inventory = inventoryGateway.getById(inventoryProduct.getInventory().getId());
+            validateInputQuantity(dto.quantity());
 
-                if (dto.quantity().compareTo(BigDecimal.ZERO) <= 0) {
-                    throw new InvalidQuantityException("A quantidade a ser descontada deve ser positiva.");
-                }
+            List<InventoryProductsEntity> ingredients = gateway.getInventoryProductByProductId(dto.productId());
 
-                BigDecimal currentQuantity = inventory.getQuantity();
+            for (InventoryProductsEntity ingredientRelation : ingredients) {
+                InventoryEntity inventory = ingredientRelation.getInventory();
 
-                if (currentQuantity == null) {
-                    throw new InvalidQuantityException("Quantidade atual do item " + inventoryProduct.getInventory().getId() + " é nula.");
-                }
+                BigDecimal currentQuantity = validateCurrentQuantity(inventory);
 
-                BigDecimal quantityToSubtract = dto.quantity().multiply(inventoryProduct.getQuantity());
-                BigDecimal newQuantity = currentQuantity.subtract(quantityToSubtract);
+                BigDecimal totalToSubtract = dto.quantity().multiply(ingredientRelation.getQuantity());
+                BigDecimal newQuantity = currentQuantity.subtract(totalToSubtract);
 
                 if (newQuantity.compareTo(BigDecimal.ZERO) < 0) {
-                    throw new InvalidQuantityException("Estoque insuficiente para concluir o pedido.");
+                    throw new InvalidQuantityException("Estoque insuficiente para o item: " + inventory.getName());
                 }
 
                 if (newQuantity.compareTo(BigDecimal.ZERO) == 0) {
-
-                    List<InventoryProductsEntity> inventoryProductRelatedEntities = gateway.getInventoryProductByInventoryId(inventoryProduct.getInventory().getId());
-
-                    for (InventoryProductsEntity relation : inventoryProductRelatedEntities) {
-                        UUID productId = relation.getProductId();
-
-                        productGateway.disableProduct(productId);
-                    }
+                    disableDependentProducts(inventory.getId());
                 }
 
                 inventory.setQuantity(newQuantity);
                 inventory.setUpdatedAt(LocalDateTime.now());
-
                 inventoryGateway.update(inventory);
-            });
-
-
+            }
         }
+    }
+
+    private void validateInputQuantity(BigDecimal quantity) {
+        if (quantity == null || quantity.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidQuantityException("A quantidade a ser descontada deve ser positiva.");
+        }
+    }
+
+    private BigDecimal validateCurrentQuantity(InventoryEntity inventory) {
+        if (inventory.getQuantity() == null) {
+            throw new InvalidQuantityException("Quantidade atual nula para o item: " + inventory.getName());
+        }
+        return inventory.getQuantity();
+    }
+
+    private void disableDependentProducts(java.util.UUID inventoryId) {
+        gateway.getInventoryProductByInventoryId(inventoryId)
+            .forEach(relation -> productGateway.disableProduct(relation.getProductId()));
     }
 }

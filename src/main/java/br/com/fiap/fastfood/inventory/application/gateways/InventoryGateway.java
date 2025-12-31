@@ -23,186 +23,92 @@ public class InventoryGateway {
     }
 
     public List<InventoryEntity> findAll() {
-
-        var result = datasource.findAll();
-
-        return result.stream()
-            .map(this::dtoToInventoryEntity
-            ).toList();
+        return datasource.findAll().stream()
+            .map(this::mapToInventoryEntity)
+            .toList();
     }
 
     public Optional<UnitEntity> findUnitById(Integer unitId) {
-        var result = datasource.findUnitById(unitId);
-
-        if (result.isPresent()) {
-            UnitEntity unitEntity = new UnitEntity(
-                result.get().id(),
-                result.get().name(),
-                result.get().abbreviation()
-            );
-
-            return Optional.of(unitEntity);
-        }
-
-        return Optional.empty();
-
+        return datasource.findUnitById(unitId)
+            .map(dto -> new UnitEntity(dto.id(), dto.name(), dto.abbreviation()));
     }
 
     public InventoryEntity create(InventoryEntity inventory) {
-
-        var result = datasource.create(
-            new GetInventoryDTO(
-                null,
-                inventory.getName(),
-                new GetUnitDTO(
-                    inventory.getUnit().getId(),
-                    inventory.getUnit().getName(),
-                    inventory.getUnit().getAbbreviation()
-                ),
-                inventory.getQuantity(),
-                inventory.getMinimumQuantity(),
-                inventory.getNotes(),
-                inventory.getCreatedAt(),
-                inventory.getUpdatedAt()
-            )
-        );
-
-        return dtoToInventoryEntity(result);
+        var result = datasource.create(mapToGetInventoryDTO(inventory));
+        return mapToInventoryEntity(result);
     }
 
     public InventoryEntity getById(UUID id) {
-
-        var result = datasource.getById(id);
-
-        return new InventoryEntity(
-            result.id(),
-            result.name(),
-            new UnitEntity(result.unit().id(), result.unit().name(), result.unit().abbreviation()),
-            result.quantity(),
-            result.minimum_quantity(),
-            result.notes(),
-            result.created_at(),
-            result.updated_at()
-        );
-
+        return mapToInventoryEntity(datasource.getById(id));
     }
 
     public void update(InventoryEntity inventory) {
-        datasource.update(new GetInventoryDTO(
-            inventory.getId(),
-            inventory.getName(),
-            new GetUnitDTO(inventory.getUnit().getId(), inventory.getUnit().getName(), inventory.getUnit().getAbbreviation()),
-            inventory.getQuantity(),
-            inventory.getMinimumQuantity(),
-            inventory.getNotes(),
-            inventory.getCreatedAt(),
-            inventory.getUpdatedAt()
-        ));
+        datasource.update(mapToGetInventoryDTO(inventory));
     }
 
-    public InventoryEntryEntity createInventoryEntry(InventoryEntryEntity inventoryEntry) {
-
+    public InventoryEntryEntity createInventoryEntry(InventoryEntryEntity entry) {
         var result = datasource.createInventoryEntry(new CreateInventoryEntryDTO(
-            inventoryEntry.getInventory().getId(),
-            inventoryEntry.getQuantity(),
-            inventoryEntry.getEntryDate(),
-            inventoryEntry.getExpirationDate()
+            entry.getInventory().getId(),
+            entry.getQuantity(),
+            entry.getEntryDate(),
+            entry.getExpirationDate()
         ));
 
         return new InventoryEntryEntity(
             result.id(),
-            new InventoryEntity(
-                result.inventory().id(),
-                result.inventory().name(),
-                new UnitEntity(
-                    result.inventory().unit().id(),
-                    result.inventory().unit().name(),
-                    result.inventory().unit().abbreviation()
-                ),
-                result.inventory().quantity(),
-                result.inventory().minimum_quantity(),
-                result.inventory().notes(),
-                result.inventory().created_at(),
-                result.inventory().updated_at()
-            ),
+            mapToInventoryEntity(result.inventory()),
             result.quantity(),
             result.expirationDate(),
             result.entryDate()
         );
-
     }
 
     public List<InventoryProductsEntity> getInventoryProductByInventoryId(UUID inventoryId) {
-        List<GetInventoryProductDTO> result = datasource.getInventoryProductByInventoryId(inventoryId);
-
-        return result.stream()
-            .map(dto -> new InventoryProductsEntity(
-                    dto.id(),
-                    dto.productId(),
-                    new InventoryEntity(
-                        dto.inventory().id(),
-                        dto.inventory().name(),
-                        new UnitEntity(
-                            dto.inventory().unit().id(),
-                            dto.inventory().unit().name(),
-                            dto.inventory().unit().abbreviation()
-                        ),
-                        dto.inventory().quantity(),
-                        dto.inventory().minimum_quantity(),
-                        dto.inventory().notes(),
-                        dto.inventory().created_at(),
-                        dto.inventory().updated_at()
-                    ),
-                    dto.quantity(),
-                    dto.createdAt(),
-                    dto.updatedAt()
-                )
-            ).toList();
+        return datasource.getInventoryProductByInventoryId(inventoryId).stream()
+            .map(this::mapToInventoryProductsEntity)
+            .toList();
     }
 
     public List<InventoryProductsEntity> getInventoryProductByProductId(UUID productId) {
-        List<GetInventoryProductDTO> result = datasource.getInventoryProductByProductId(productId);
-
-        return result.stream()
-            .map(dto -> new InventoryProductsEntity(
-                    dto.id(),
-                    dto.productId(),
-                    new InventoryEntity(
-                        dto.inventory().id(),
-                        dto.inventory().name(),
-                        new UnitEntity(
-                            dto.inventory().unit().id(),
-                            dto.inventory().unit().name(),
-                            dto.inventory().unit().abbreviation()
-                        ),
-                        dto.inventory().quantity(),
-                        dto.inventory().minimum_quantity(),
-                        dto.inventory().notes(),
-                        dto.inventory().created_at(),
-                        dto.inventory().updated_at()
-                    ),
-                    dto.quantity(),
-                    dto.createdAt(),
-                    dto.updatedAt()
-                )
-            ).toList();
+        return datasource.getInventoryProductByProductId(productId).stream()
+            .map(this::mapToInventoryProductsEntity)
+            .toList();
     }
 
-    private InventoryEntity dtoToInventoryEntity(GetInventoryDTO dto) {
-
-        return new InventoryEntity(dto.id(),
+    private InventoryEntity mapToInventoryEntity(GetInventoryDTO dto) {
+        return new InventoryEntity(
+            dto.id(),
             dto.name(),
-            new UnitEntity(
-                dto.unit().id(),
-                dto.unit().name(),
-                dto.unit().abbreviation()
-            ),
+            new UnitEntity(dto.unit().id(), dto.unit().name(), dto.unit().abbreviation()),
             dto.quantity(),
             dto.minimum_quantity(),
             dto.notes(),
             dto.created_at(),
             dto.updated_at()
         );
+    }
 
+    private GetInventoryDTO mapToGetInventoryDTO(InventoryEntity entity) {
+        return new GetInventoryDTO(
+            entity.getId(),
+            entity.getName(),
+            new GetUnitDTO(entity.getUnit().getId(), entity.getUnit().getName(), entity.getUnit().getAbbreviation()),
+            entity.getQuantity(),
+            entity.getMinimumQuantity(),
+            entity.getNotes(),
+            entity.getCreatedAt(),
+            entity.getUpdatedAt()
+        );
+    }
+
+    private InventoryProductsEntity mapToInventoryProductsEntity(GetInventoryProductDTO dto) {
+        return new InventoryProductsEntity(
+            dto.id(),
+            dto.productId(),
+            mapToInventoryEntity(dto.inventory()),
+            dto.quantity(),
+            dto.createdAt(),
+            dto.updatedAt()
+        );
     }
 }

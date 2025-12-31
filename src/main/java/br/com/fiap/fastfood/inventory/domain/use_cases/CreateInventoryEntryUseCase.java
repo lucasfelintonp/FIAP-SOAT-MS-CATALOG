@@ -5,14 +5,12 @@ import br.com.fiap.fastfood.inventory.application.gateways.InventoryGateway;
 import br.com.fiap.fastfood.inventory.domain.entities.InventoryEntity;
 import br.com.fiap.fastfood.inventory.domain.entities.InventoryEntryEntity;
 
-import java.math.BigDecimal;
-
 public class CreateInventoryEntryUseCase {
 
     InventoryGateway gateway;
 
     public CreateInventoryEntryUseCase(
-        InventoryGateway gateway
+            InventoryGateway gateway
     ) {
         this.gateway = gateway;
     }
@@ -21,24 +19,18 @@ public class CreateInventoryEntryUseCase {
 
         InventoryEntity inventory = gateway.getById(dto.inventoryId());
 
-        BigDecimal quantity;
-        quantity = dto.quantity().add(inventory.getQuantity());
-        inventory.setQuantity(quantity);
+        inventory.setQuantity(inventory.getQuantity().add(dto.quantity()));
 
         InventoryEntryEntity inventoryEntry = new InventoryEntryEntity(
-            null,
-            inventory,
-            dto.quantity(),
-            dto.expirationDate(),
-            dto.entryDate()
+                null,
+                inventory,
+                dto.quantity(),
+                dto.expirationDate(),
+                dto.entryDate()
         );
-
-        InventoryEntryEntity persistedInventoryEntry = gateway.createInventoryEntry(inventoryEntry);
 
         gateway.update(inventory);
 
-        return persistedInventoryEntry;
-
+        return gateway.createInventoryEntry(inventoryEntry);
     }
-
 }

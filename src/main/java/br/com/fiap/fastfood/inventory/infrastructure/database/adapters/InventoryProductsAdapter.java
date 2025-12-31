@@ -28,16 +28,16 @@ public class InventoryProductsAdapter implements InventoryProductsDatasource {
 
     @Override
     public List<GetInventoryProductDTO> getInventoryProductByProductId(UUID productId) {
-        var result = repository.findByProductId(productId);
-
-        return result.stream().map(this::inventoryProductEntityToDto).toList();
+        return repository.findByProductId(productId).stream()
+            .map(this::inventoryProductEntityToDto)
+            .toList();
     }
 
     @Override
     public List<GetInventoryProductDTO> getInventoryProductByInventoryId(UUID inventoryId) {
-        var result = repository.findByInventoryId(inventoryId);
-
-        return result.stream().map(this::inventoryProductEntityToDto).toList();
+        return repository.findByInventoryId(inventoryId).stream()
+            .map(this::inventoryProductEntityToDto)
+            .toList();
     }
 
     private GetInventoryProductDTO inventoryProductEntityToDto(InventoryProductsEntityJPA entityJPA) {
@@ -68,6 +68,7 @@ public class InventoryProductsAdapter implements InventoryProductsDatasource {
         return new GetUnitDTO(
             entityJPA.getId(),
             entityJPA.getName(),
-            entityJPA.getAbbreviation());
+            entityJPA.getAbbreviation()
+        );
     }
 }

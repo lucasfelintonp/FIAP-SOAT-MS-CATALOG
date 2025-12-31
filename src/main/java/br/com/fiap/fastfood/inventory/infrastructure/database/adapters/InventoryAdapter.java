@@ -1,6 +1,7 @@
 package br.com.fiap.fastfood.inventory.infrastructure.database.adapters;
 
 import br.com.fiap.fastfood.inventory.application.dtos.*;
+import br.com.fiap.fastfood.inventory.common.exceptions.EntityNotFoundException;
 import br.com.fiap.fastfood.inventory.infrastructure.database.entities.InventoryEntityJPA;
 import br.com.fiap.fastfood.inventory.infrastructure.database.entities.InventoryEntryEntityJPA;
 import br.com.fiap.fastfood.inventory.infrastructure.database.entities.InventoryProductsEntityJPA;
@@ -29,7 +30,7 @@ public class InventoryAdapter implements InventoryDatasource {
     public InventoryAdapter(
             InventoryRepository inventoryRepository,
             UnitRepository unitRepository,
-            InventoryEntryRepository inventoryEntryRepository, InventoryProductsRepository inventoryProductsRepository){
+            InventoryEntryRepository inventoryEntryRepository, InventoryProductsRepository inventoryProductsRepository) {
         this.inventoryRepository = inventoryRepository;
         this.unitRepository = unitRepository;
         this.inventoryEntryRepository = inventoryEntryRepository;
@@ -38,52 +39,67 @@ public class InventoryAdapter implements InventoryDatasource {
 
     @Override
     public List<GetInventoryDTO> findAll() {
-        var inventoryItems = inventoryRepository.findAll();
-
-        return inventoryItems.stream().map(this::inventoryEntityToDto).toList();
+        return inventoryRepository.findAll().stream()
+                .map(this::inventoryEntityToDto)
+                .toList();
     }
 
     @Override
     public Optional<GetUnitDTO> findUnitById(Integer unitId) {
-        var unit = unitRepository.findById(unitId);
-
-        if (unit.isPresent()) {
-            GetUnitDTO dto = unitEntityToDto(unit.get());
-            return Optional.of(dto);
-        } else {
-            return Optional.empty();
-        }
+        return unitRepository.findById(unitId)
+                .map(this::unitEntityToDto);
     }
 
     @Override
     public GetInventoryDTO create(GetInventoryDTO dto) {
-        var inventoryEntityJPA = dtoToInventoryEntityJPA(dto);
+        var unit = unitRepository.findById(dto.unit().id())
+                .orElseThrow(() -> new EntityNotFoundException("Unidade não encontrada ID: " + dto.unit().id()));
 
-        var inventoryItem = inventoryRepository.save(inventoryEntityJPA);
+        var inventoryEntityJPA = new InventoryEntityJPA(
+                null, // ID nulo para nova inserção
+                dto.name(),
+                unit,
+                dto.quantity(),
+                dto.minimum_quantity(),
+                dto.notes(),
+                dto.created_at(),
+                dto.updated_at()
+        );
 
-        return inventoryEntityToDto(inventoryItem);
+        return inventoryEntityToDto(inventoryRepository.save(inventoryEntityJPA));
     }
 
     @Override
     public GetInventoryDTO getById(UUID id) {
-        var itemJPA = inventoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Item de estoque de ID " + id + " não existe"));
-
-        return inventoryEntityToDto(itemJPA);
+        return inventoryRepository.findById(id)
+                .map(this::inventoryEntityToDto)
+                .orElseThrow(() -> new EntityNotFoundException("Item de estoque não existe ID: " + id));
     }
 
     @Override
     public void update(GetInventoryDTO dto) {
-        var inventoryEntityJPA = dtoToInventoryEntityJPA(dto);
+        var existingItem = inventoryRepository.findById(dto.id())
+                .orElseThrow(() -> new EntityNotFoundException("Item não encontrado para atualização ID: " + dto.id()));
 
-        inventoryRepository.save(inventoryEntityJPA);
+        existingItem.setName(dto.name());
+        existingItem.setQuantity(dto.quantity());
+        existingItem.setMinimumQuantity(dto.minimum_quantity());
+        existingItem.setNotes(dto.notes());
+        existingItem.setUpdatedAt(dto.updated_at());
+
+        if (!existingItem.getUnit().getId().equals(dto.unit().id())) {
+            var unit = unitRepository.findById(dto.unit().id())
+                    .orElseThrow(() -> new EntityNotFoundException("Nova unidade não encontrada"));
+            existingItem.setUnit(unit);
+        }
+
+        inventoryRepository.save(existingItem);
     }
 
     @Override
     public GetInventoryEntryDTO createInventoryEntry(CreateInventoryEntryDTO dto) {
-        var inventory = inventoryRepository.findById(dto.inventoryId()).orElseThrow(
-                () -> new RuntimeException("Item de estoque com ID " + dto.inventoryId() + " não encontrado.")
-        );
+        var inventory = inventoryRepository.findById(dto.inventoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Item de estoque não encontrado ID: " + dto.inventoryId()));
 
         var result = inventoryEntryRepository.save(new InventoryEntryEntityJPA(
                 null,
@@ -91,7 +107,6 @@ public class InventoryAdapter implements InventoryDatasource {
                 dto.quantity(),
                 dto.expirationDate(),
                 dto.entryDate()
-
         ));
 
         return new GetInventoryEntryDTO(
@@ -105,49 +120,33 @@ public class InventoryAdapter implements InventoryDatasource {
 
     @Override
     public List<GetInventoryProductDTO> getInventoryProductByInventoryId(UUID inventoryId) {
-        var result = inventoryProductsRepository.findByInventoryId(inventoryId);
-
-        return result.stream().map(this::inventoryProductEntityToDto).toList();
+        return inventoryProductsRepository.findByInventoryId(inventoryId).stream()
+                .map(this::inventoryProductEntityToDto)
+                .toList();
     }
 
     @Override
     public List<GetInventoryProductDTO> getInventoryProductByProductId(UUID productId) {
-        var result = inventoryProductsRepository.findByProductId(productId);
-
-        return result.stream().map(this::inventoryProductEntityToDto).toList();
+        return inventoryProductsRepository.findByProductId(productId).stream()
+                .map(this::inventoryProductEntityToDto)
+                .toList();
     }
 
     private GetInventoryDTO inventoryEntityToDto(InventoryEntityJPA entityJPA) {
         return new GetInventoryDTO(
-            entityJPA.getId(),
-            entityJPA.getName(),
-            unitEntityToDto(entityJPA.getUnit()),
-            entityJPA.getQuantity(),
-            entityJPA.getMinimumQuantity(),
-            entityJPA.getNotes(),
-            entityJPA.getCreatedAt(),
-            entityJPA.getUpdatedAt()
+                entityJPA.getId(),
+                entityJPA.getName(),
+                unitEntityToDto(entityJPA.getUnit()),
+                entityJPA.getQuantity(),
+                entityJPA.getMinimumQuantity(),
+                entityJPA.getNotes(),
+                entityJPA.getCreatedAt(),
+                entityJPA.getUpdatedAt()
         );
     }
 
     private GetUnitDTO unitEntityToDto(UnitEntityJPA entityJPA) {
-        return new GetUnitDTO(
-            entityJPA.getId(),
-            entityJPA.getName(),
-            entityJPA.getAbbreviation());
-    }
-
-    private InventoryEntityJPA dtoToInventoryEntityJPA(GetInventoryDTO dto) {
-        return new InventoryEntityJPA(
-            dto.id(),
-            dto.name(),
-            new UnitEntityJPA(dto.unit().id(), dto.unit().name(), dto.unit().abbreviation()),
-            dto.quantity(),
-            dto.minimum_quantity(),
-            dto.notes(),
-            dto.created_at(),
-            dto.updated_at()
-        );
+        return new GetUnitDTO(entityJPA.getId(), entityJPA.getName(), entityJPA.getAbbreviation());
     }
 
     private GetInventoryProductDTO inventoryProductEntityToDto(InventoryProductsEntityJPA entityJPA) {

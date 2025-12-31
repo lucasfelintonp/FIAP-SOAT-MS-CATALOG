@@ -31,13 +31,12 @@ public class InventoryProductController {
         this.productDatasource = productDatasource;
     }
 
-    public void discountInventoryItemsByProducts(List<ProductsQuantityDTO> dto){
+    public void discountInventoryItemsByProducts(List<ProductsQuantityDTO> dto) {
         InventoryProductGateway gateway = new InventoryProductGateway(datasource);
         InventoryGateway inventoryGateway = new InventoryGateway(inventoryDatasource);
         ProductGateway productGateway = new ProductGateway(productDatasource);
 
         GetInventoryByProducts getInventoryByProducts = new GetInventoryByProducts(gateway, inventoryGateway, productGateway);
-
         getInventoryByProducts.run(dto);
     }
 

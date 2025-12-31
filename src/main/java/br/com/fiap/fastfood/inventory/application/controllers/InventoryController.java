@@ -22,22 +22,17 @@ public class InventoryController {
 
     public List<GetInventoryDTO> searchInventory() {
         InventoryGateway gateway = new InventoryGateway(datasource);
-
         SearchInventoryUseCase searchInventoryUseCase = new SearchInventoryUseCase(gateway);
 
         var inventoryItems = searchInventoryUseCase.run();
-
         return InventoryPresenter.searchInventoryDTO(inventoryItems);
     }
 
     public GetInventoryDTO createInventoryItem(CreateInventoryItemDTO dto) {
         InventoryGateway gateway = new InventoryGateway(datasource);
-
         CreateInventoryItemUseCase createInventoryItemUseCase = new CreateInventoryItemUseCase(gateway);
 
         var item = createInventoryItemUseCase.run(dto);
-
         return InventoryPresenter.createInventoryDTO(item);
     }
-
 }
