@@ -1,5 +1,6 @@
 package br.com.fiap.fastfood.inventory.application.controllers;
 
+import br.com.fiap.fastfood.inventory.application.dtos.CreateInventoryEntryDTO;
 import br.com.fiap.fastfood.inventory.application.dtos.CreateInventoryItemDTO;
 import br.com.fiap.fastfood.inventory.application.dtos.GetInventoryDTO;
 import br.com.fiap.fastfood.inventory.application.dtos.ProductsQuantityDTO;
@@ -38,7 +39,5 @@ public class InventoryController {
 
         return InventoryPresenter.createInventoryDTO(item);
     }
-
-
 
 }

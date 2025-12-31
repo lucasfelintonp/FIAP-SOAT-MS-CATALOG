@@ -2,6 +2,7 @@ package br.com.fiap.fastfood.inventory.common.handlers;
 
 import br.com.fiap.fastfood.inventory.application.controllers.InventoryController;
 import br.com.fiap.fastfood.inventory.application.controllers.InventoryProductController;
+import br.com.fiap.fastfood.inventory.application.dtos.CreateInventoryEntryDTO;
 import br.com.fiap.fastfood.inventory.application.dtos.CreateInventoryItemDTO;
 import br.com.fiap.fastfood.inventory.application.dtos.GetInventoryDTO;
 import br.com.fiap.fastfood.inventory.application.dtos.ProductsQuantityDTO;
@@ -70,5 +71,17 @@ public class InventoryHandler {
         inventoryProductController.discountInventoryItemsByProducts(dtos);
 
         return ResponseEntity.ok("Estoque descontado com sucesso.");
+    }
+
+    @Operation(summary = "Cadastrar lote de estoque", description = "Acrescentar novo lote de estoque.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Estoque atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Nenhum estoque encontrado")
+    })
+    @PostMapping("/entry")
+    public ResponseEntity<String> createInventoryEntry(@RequestBody CreateInventoryEntryDTO dto) {
+        inventoryProductController.createInventoryEntry(dto);
+
+        return ResponseEntity.ok("Lote de estoque adicionado com sucesso");
     }
 }
