@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog-config
+  namespace: fastfood
+data:
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-catalog:5432/fiap-ms-catalog
