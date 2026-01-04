@@ -9,7 +9,8 @@ services:
       spring.datasource.username: ${POSTGRES_USER}
       spring.datasource.password: ${POSTGRES_PASSWORD}
     depends_on:
-      - postgres_db
+      postgres_db:
+        condition: service_healthy
     restart: always
 
   postgres_db:
@@ -20,6 +21,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_ms_products:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: always
 
 volumes:

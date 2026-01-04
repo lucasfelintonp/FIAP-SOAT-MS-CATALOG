@@ -113,7 +113,7 @@ class InventoryAdapterTest {
 
         GetInventoryDTO updateDTO = new GetInventoryDTO(
             inventoryId,
-            "Carne Moída de degunda",
+            "Carne Moída de segunda",
             new GetUnitDTO(1, "Quilograma", "KG"),
             new BigDecimal("15.5"),
             new BigDecimal("5.0"),
