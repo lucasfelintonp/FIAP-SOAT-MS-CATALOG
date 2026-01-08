@@ -24,7 +24,7 @@ Renomear o microserviço de `FIAP-SOAT-MS-PRODUCTS` para `FIAP-SOAT-MS-CATALOG`,
 
 ## Implicações operacionais
 
-- **Infraestrutura**: Containers, volumes e arquivos Kubernetes renomeados. Health checks migrados para `/actuator/health/{readiness|liveness}`. Secret do banco atualizado para `fiaptc-catalog`.
+- **Infraestrutura**: Containers, volumes e arquivos Kubernetes renomeados. Health checks migrados para `/actuator/health/readiness` e `/actuator/health/liveness`. Secret do banco atualizado para `fiaptc-catalog`.
 - **Documentação**: ADRs, README e guias atualizados para refletir novo nome.
 - **Código preservado**: Pacotes Java (`product/`, `category/`, `inventory/`), endpoints de API (`/api/v1/products`, etc) e tabelas do banco mantidos para preservar DDD e retrocompatibilidade.
 - **Ações pós-migração**: Renomear repositório Git, atualizar SonarQube, pipelines CI/CD e service discovery.
