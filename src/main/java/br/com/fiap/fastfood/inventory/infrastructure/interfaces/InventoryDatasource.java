@@ -23,4 +23,6 @@ public interface InventoryDatasource {
     List<GetInventoryProductDTO> getInventoryProductByInventoryId(UUID inventoryId);
 
     List<GetInventoryProductDTO> getInventoryProductByProductId(UUID productId);
+
+    void createInventoryProduct(PersistInventoryProductDTO dto);
 }

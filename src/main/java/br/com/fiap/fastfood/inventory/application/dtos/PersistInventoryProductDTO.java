@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Schema(description = "DTO de resposta contendo a relação entre produto e item de inventário")
-public record GetInventoryProductDTO(
+@Schema(description = "DTO interno para persistência de relação entre produto e inventário")
+public record PersistInventoryProductDTO(
     @Schema(
             description = "ID único do relacionamento",
             example = "550e8400-e29b-41d4-a716-446655440000"
@@ -21,9 +21,10 @@ public record GetInventoryProductDTO(
     UUID productId,
 
     @Schema(
-            description = "Dados do item de inventário"
+            description = "ID do item de inventário",
+            example = "750e8400-e29b-41d4-a716-446655440002"
     )
-    GetInventoryDTO inventory,
+    UUID inventoryId,
 
     @Schema(
             description = "Quantidade do item necessária para o produto",
@@ -42,5 +43,7 @@ public record GetInventoryProductDTO(
             example = "2026-01-08T15:45:00"
     )
     LocalDateTime updatedAt
+
 ) {
 }
+

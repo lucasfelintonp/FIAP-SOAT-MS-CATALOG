@@ -1,5 +1,6 @@
 package br.com.fiap.fastfood.product.application.controllers;
 
+import br.com.fiap.fastfood.inventory.infrastructure.interfaces.InventoryDatasource;
 import br.com.fiap.fastfood.product.application.dtos.CreateProductDTO;
 import br.com.fiap.fastfood.product.application.dtos.ProductDTO;
 import br.com.fiap.fastfood.product.application.dtos.UpdateProductDTO;
@@ -24,11 +25,14 @@ class ProductControllerTest {
     @Mock
     private ProductDatasource datasource;
 
+    @Mock
+    private InventoryDatasource inventoryDatasource;
+
     private ProductController controller;
 
     @BeforeEach
     void setUp() {
-        controller = new ProductController(datasource);
+        controller = new ProductController(datasource, inventoryDatasource);
     }
 
     @Test
@@ -39,7 +43,8 @@ class ProductControllerTest {
             new BigDecimal("6.50"),
             true,
             "/images/coxinha.jpg",
-            1
+            1,
+            null
         );
 
         var id = UUID.randomUUID();
@@ -65,7 +70,8 @@ class ProductControllerTest {
             new BigDecimal("4.00"),
             true,
             "/images/refri.jpg",
-            2
+            2,
+            null
         );
 
         when(datasource.create(any())).thenThrow(new RuntimeException("DB down"));

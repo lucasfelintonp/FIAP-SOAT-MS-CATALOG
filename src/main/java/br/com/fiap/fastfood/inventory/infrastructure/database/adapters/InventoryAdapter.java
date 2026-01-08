@@ -132,6 +132,21 @@ public class InventoryAdapter implements InventoryDatasource {
                 .toList();
     }
 
+    @Override
+    public void createInventoryProduct(PersistInventoryProductDTO dto) {
+        InventoryEntityJPA inventory = inventoryRepository.findById(dto.inventoryId())
+            .orElseThrow(() -> new RuntimeException("Item de estoque de ID " + dto.inventoryId() + " não foi encontrado"));
+
+        inventoryProductsRepository.save(new InventoryProductsEntityJPA(
+            dto.id(),
+            dto.productId(),
+            inventory,
+            dto.quantity(),
+            dto.createdAt(),
+            dto.updatedAt()
+        ));
+    }
+
     private GetInventoryDTO inventoryEntityToDto(InventoryEntityJPA entityJPA) {
         return new GetInventoryDTO(
                 entityJPA.getId(),

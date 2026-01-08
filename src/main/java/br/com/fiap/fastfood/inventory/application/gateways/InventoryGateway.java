@@ -1,9 +1,6 @@
 package br.com.fiap.fastfood.inventory.application.gateways;
 
-import br.com.fiap.fastfood.inventory.application.dtos.CreateInventoryEntryDTO;
-import br.com.fiap.fastfood.inventory.application.dtos.GetInventoryDTO;
-import br.com.fiap.fastfood.inventory.application.dtos.GetInventoryProductDTO;
-import br.com.fiap.fastfood.inventory.application.dtos.GetUnitDTO;
+import br.com.fiap.fastfood.inventory.application.dtos.*;
 import br.com.fiap.fastfood.inventory.domain.entities.InventoryEntity;
 import br.com.fiap.fastfood.inventory.domain.entities.InventoryEntryEntity;
 import br.com.fiap.fastfood.inventory.domain.entities.InventoryProductsEntity;
@@ -73,6 +70,20 @@ public class InventoryGateway {
         return datasource.getInventoryProductByProductId(productId).stream()
             .map(this::mapToInventoryProductsEntity)
             .toList();
+    }
+
+    public void createInventoryProduct(InventoryProductsEntity entity) {
+
+        PersistInventoryProductDTO dto = new PersistInventoryProductDTO(
+            null,
+            entity.getProductId(),
+            entity.getInventory().getId(),
+            entity.getQuantity(),
+            null,
+            null
+        );
+
+        datasource.createInventoryProduct(dto);
     }
 
     private InventoryEntity mapToInventoryEntity(GetInventoryDTO dto) {

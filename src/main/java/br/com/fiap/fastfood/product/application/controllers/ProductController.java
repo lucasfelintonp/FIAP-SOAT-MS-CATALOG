@@ -1,5 +1,8 @@
 package br.com.fiap.fastfood.product.application.controllers;
 
+import br.com.fiap.fastfood.inventory.application.gateways.InventoryGateway;
+import br.com.fiap.fastfood.inventory.domain.use_cases.CreateInventoryProductsUseCase;
+import br.com.fiap.fastfood.inventory.infrastructure.interfaces.InventoryDatasource;
 import br.com.fiap.fastfood.product.application.dtos.CreateProductDTO;
 import br.com.fiap.fastfood.product.application.dtos.ProductDTO;
 import br.com.fiap.fastfood.product.application.dtos.UpdateProductDTO;
@@ -14,19 +17,25 @@ import java.util.UUID;
 
 public class ProductController {
     private final ProductDatasource productDatasource;
+    private final InventoryDatasource inventoryDatasource;
 
     public ProductController(
-        ProductDatasource productDatasource
+        ProductDatasource productDatasource,
+        InventoryDatasource inventoryDatasource
     ) {
         this.productDatasource = productDatasource;
+        this.inventoryDatasource = inventoryDatasource;
     }
 
     public ProductDTO create(CreateProductDTO productDTO) {
         ProductGateway productGateway = new ProductGateway(productDatasource);
+        InventoryGateway inventoryGateway = new InventoryGateway(inventoryDatasource);
 
         CreateProductUseCase createProductUseCase = new CreateProductUseCase(productGateway);
+        CreateInventoryProductsUseCase createInventoryProductsUseCase = new CreateInventoryProductsUseCase(inventoryGateway);
 
         ProductEntity productEntity = createProductUseCase.run(productDTO);
+        createInventoryProductsUseCase.run(productEntity, productDTO);
 
         return ProductPresenter.create(productEntity);
     }

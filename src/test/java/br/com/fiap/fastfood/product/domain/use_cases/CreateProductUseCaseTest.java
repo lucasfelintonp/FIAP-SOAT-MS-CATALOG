@@ -31,7 +31,8 @@ class CreateProductUseCaseTest {
             new BigDecimal("19.90"),
             true,
             "/images/cheeseburger.jpg",
-            1
+            1,
+            null
         );
         ProductEntity returned = new ProductEntity(
             null,
@@ -62,7 +63,8 @@ class CreateProductUseCaseTest {
             new BigDecimal("19.90"),
             true,
             "/images/cheeseburger.jpg",
-            1
+            1,
+            null
         );
 
         assertThrows(ProductInvalidRequestException.class, () -> useCase.run(dto));
