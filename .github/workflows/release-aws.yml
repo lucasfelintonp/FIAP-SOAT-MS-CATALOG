@@ -1,0 +1,59 @@
+name: CI/CD Catalog MS
+
+on:
+    pull_request:
+    push:
+        branches: [ main, develop, chore/k8s ]
+
+env:
+    AWS_REGION: us-east-1
+    ECR_REPOSITORY: fiap-fastfood-ms-catalog
+    EKS_CLUSTER_NAME: fiap-fastfood-eks
+
+jobs:
+    deploy:
+        name: Build & Deploy to EKS
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push'
+        #&& github.ref == 'refs/heads/main' -- adicionar depois, primeiro é só teste
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  aws-access-key-id: ASIAZZ4SO232QPJFDODM
+                  aws-secret-access-key: jbFGEoPzz6xVDtIimiSchcoSdWJsfRlaF6A9s/m5
+                  aws-session-token: IQoJb3JpZ2luX2VjELf//////////wEaCXVzLXdlc3QtMiJHMEUCIQDdlIKcSAiA5BLzfQENvnoiLUCkHk6kUyJ6fWUY51Cs2QIgLnfN4z2V20cdxNMbEmeQaKXZk4gli5RTY+TrHoHEIfcqtgIIgP//////////ARAFGgw2NzQwODAxNTEyODUiDFzfJZfHQJ+j74c+wCqKAjxG/+i9E0gl3Tl+B2kXFdFYAa4yHzjfimSyYkqU3xHIViElQFQqVmyQkFf4R9B1xrz/2lQIDxSHZ6sPxTvDiEMgNmZkGWmnxmyiIRixuQYd1yoatM9armckFVanUqXSDmuMDavGOSxLBVWTgySXyycMjHhcat0dt5rEeBXXl6tufqGxKAUvGic8x4MP+4keJt++djiDaWkGJq2N05hQY4ftf2gOEFBjCouP8PqkiTE/9QYxMz/wXqFUD+e2P7cnyHz6oyX0VMC4wZFGaKygG6LxzddvAaZSlDJIN+Me5UT6eO0bXmP6i6SefqlbZazMccCYzdxHbPQVsiN0mihJX4Pqt4tguNr1XrX3MOjG+8oGOp0BsLt6gwFdAt3RwU0Wc0IZbpXbtpwwf9/GSMWG1JHOBa9itp692V+CjS3VZt2AkFiJvOBoKTkMkmkO4TZo7tuDhdd5LlYnFOblba5mltgKyevNpKTHYucxKUenvIc84g9UGM+kHYhewdT1N5Oq0sXcVoQLhCt1PcYnljisAy6iuXPuQy2mCLxVVhkgL87ZIG7SkwlqXlnuFxM/gT43rw==
+                  aws-region: ${{ env.AWS_REGION }}
+
+            - name: Login to Amazon ECR
+              uses: aws-actions/amazon-ecr-login@v2
+
+            - name: Build, tag and push image
+              run: |
+                  IMAGE_TAG=${GITHUB_SHA}
+                  ECR_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${AWS_REGION}.amazonaws.com
+
+                  docker build -t ${ECR_REPOSITORY}:${IMAGE_TAG} .
+                  docker tag ${ECR_REPOSITORY}:${IMAGE_TAG} ${ECR_URI}/${ECR_REPOSITORY}:latest
+                  docker tag ${ECR_REPOSITORY}:${IMAGE_TAG} ${ECR_URI}/${ECR_REPOSITORY}:${IMAGE_TAG}
+
+                  docker push ${ECR_URI}/${ECR_REPOSITORY}:latest
+                  docker push ${ECR_URI}/${ECR_REPOSITORY}:${IMAGE_TAG}
+
+            - name: Update kubeconfig
+              run: |
+                  aws eks update-kubeconfig \
+                    --region ${AWS_REGION} \
+                    --name ${EKS_CLUSTER_NAME}
+
+            - name: Deploy to Kubernetes
+              run: |
+                  kubectl apply -f k8s/aws/namespace.yaml
+                  kubectl apply -f k8s/aws/secret.yaml
+                  kubectl apply -f k8s/aws/configmap.yaml
+                  kubectl apply -f k8s/aws/catalog-deployment.yaml
+                  kubectl apply -f k8s/aws/catalog-service.yaml
