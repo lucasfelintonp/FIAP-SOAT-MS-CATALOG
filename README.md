@@ -314,7 +314,7 @@ O projeto inclui os seguintes componentes Kubernetes:
 
 - **Namespace**: `fastfood` - Isolamento dos recursos
 - **Deployment**: `catalog` - Aplicação do microserviço (1 réplica)
-- **Service**: `catalog-service` - Exposição da aplicação (ClusterIP na porta 8080)
+- **Service**: `catalog` - Exposição da aplicação (ClusterIP na porta 8080)
 
 ### 🗄️ Banco de dados
 
