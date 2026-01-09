@@ -3,6 +3,7 @@ FROM maven:3.9.9-amazoncorretto-23-alpine AS builder
 WORKDIR /app
 
 COPY pom.xml .
+COPY checkstyle.xml .
 
 RUN mvn dependency:go-offline
 
