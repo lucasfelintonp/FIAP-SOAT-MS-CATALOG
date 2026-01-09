@@ -3,7 +3,7 @@ name: CI/CD Catalog MS
 on:
     pull_request:
     push:
-        branches: [ main, develop, chore/k8s ]
+        branches: [ main ]
 
 env:
     AWS_REGION: us-east-1
