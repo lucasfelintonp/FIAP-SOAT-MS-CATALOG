@@ -8,14 +8,28 @@ import br.com.fiap.fastfood.product.domain.entities.ProductEntity;
 
 import java.time.LocalDateTime;
 
+/**
+ * Use case for creating inventory products.
+ */
 public class CreateInventoryProductsUseCase {
-    InventoryGateway gateway;
+    private final InventoryGateway gateway;
 
-    public CreateInventoryProductsUseCase(InventoryGateway inventoryGateway) {
+    /**
+     * Constructor.
+     *
+     * @param inventoryGateway the inventory gateway
+     */
+    public CreateInventoryProductsUseCase(final InventoryGateway inventoryGateway) {
         this.gateway = inventoryGateway;
     }
 
-    public void run(ProductEntity productEntity, CreateProductDTO dto) {
+    /**
+     * Executes the use case.
+     *
+     * @param productEntity the product entity
+     * @param dto the product creation data
+     */
+    public void run(final ProductEntity productEntity, final CreateProductDTO dto) {
         if (dto.inventories() == null || dto.inventories().isEmpty()) {
             return;
         }
