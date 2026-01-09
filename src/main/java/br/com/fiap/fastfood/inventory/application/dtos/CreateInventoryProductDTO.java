@@ -5,11 +5,10 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.UUID;
 
-@Schema(description = "DTO para criação de entrada/lote de estoque")
-public record CreateInventoryEntryDTO(
+@Schema(description = "DTO para criação de relação entre produto e item de inventário")
+public record CreateInventoryProductDTO(
     @Schema(
             description = "ID do item de inventário",
             example = "550e8400-e29b-41d4-a716-446655440000"
@@ -18,25 +17,12 @@ public record CreateInventoryEntryDTO(
     UUID inventoryId,
 
     @Schema(
-            description = "Quantidade a ser adicionada ao estoque",
-            example = "100.0",
+            description = "Quantidade do item necessária para o produto",
+            example = "0.5",
             minimum = "0.01"
     )
     @NotNull(message = "Quantidade é obrigatória")
     @DecimalMin(value = "0.01", message = "Quantidade deve ser maior que zero")
-    BigDecimal quantity,
-
-    @Schema(
-            description = "Data de entrada do lote",
-            example = "2026-01-08"
-    )
-    @NotNull(message = "Data de entrada é obrigatória")
-    LocalDate entryDate,
-
-    @Schema(
-            description = "Data de validade do lote",
-            example = "2026-06-30"
-    )
-    LocalDate expirationDate
+    BigDecimal quantity
 ) {
 }

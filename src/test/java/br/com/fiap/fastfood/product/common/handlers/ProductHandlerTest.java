@@ -1,5 +1,6 @@
 package br.com.fiap.fastfood.product.common.handlers;
 
+import br.com.fiap.fastfood.inventory.infrastructure.interfaces.InventoryDatasource;
 import br.com.fiap.fastfood.product.application.dtos.CreateProductDTO;
 import br.com.fiap.fastfood.product.application.dtos.ProductDTO;
 import br.com.fiap.fastfood.product.infrastructure.interfaces.ProductDatasource;
@@ -18,7 +19,8 @@ class ProductHandlerTest {
     @Test
     void createDelegatesToControllerAndReturns201Body() {
         ProductDatasource ds = mock(ProductDatasource.class);
-        ProductHandler handler = new ProductHandler(ds);
+        InventoryDatasource ids = mock(InventoryDatasource.class);
+        ProductHandler handler = new ProductHandler(ds, ids);
 
         CreateProductDTO dto = new CreateProductDTO(
             "Cheeseburger",
@@ -26,7 +28,8 @@ class ProductHandlerTest {
             new BigDecimal("19.90"),
             true,
             "/images/cheeseburger.jpg",
-            1
+            1,
+            null
         );
         ProductDTO returned = new ProductDTO(
             UUID.fromString("a3b5f3e0-1a2b-4c3d-8e9f-1234567890ab"),
@@ -52,7 +55,8 @@ class ProductHandlerTest {
     @Test
     void findAllByIdsDelegatesToControllerAndReturnsList() {
         ProductDatasource ds = mock(ProductDatasource.class);
-        ProductHandler handler = new ProductHandler(ds);
+        InventoryDatasource ids = mock(InventoryDatasource.class);
+        ProductHandler handler = new ProductHandler(ds, ids);
 
         var id1 = UUID.fromString("a3b5f3e0-1a2b-4c3d-8e9f-1234567890ab");
         var id2 = UUID.fromString("b4c6d7f1-2b3c-4d5e-9f01-2345678901bc");
@@ -95,7 +99,8 @@ class ProductHandlerTest {
     @Test
     void findAllByIdsReturnsEmptyWhenDatasourceEmpty() {
         ProductDatasource ds = mock(ProductDatasource.class);
-        ProductHandler handler = new ProductHandler(ds);
+        InventoryDatasource ids = mock(InventoryDatasource.class);
+        ProductHandler handler = new ProductHandler(ds, ids);
 
         var id1 = UUID.fromString("a3b5f3e0-1a2b-4c3d-8e9f-1234567890ab");
         var id2 = UUID.fromString("b4c6d7f1-2b3c-4d5e-9f01-2345678901bc");
