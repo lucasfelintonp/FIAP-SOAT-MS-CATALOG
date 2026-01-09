@@ -1,5 +1,9 @@
 # 📦 FASTFOOD - MS Catalog
 
+[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-MS-PRODUCTS&metric=alert_status)](https://sonarcloud.io/dashboard?id=FIAP-SOAT-MS-PRODUCTS)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-MS-PRODUCTS&metric=coverage)](https://sonarcloud.io/dashboard?id=FIAP-SOAT-MS-PRODUCTS)
+
+
 Microserviço de Catálogo do sistema de autoatendimento Fastfood, implementado em Java 23 com Spring Boot e estruturado conforme os princípios da Clean Architecture. Responsável pela gestão completa do catálogo de produtos, categorias e inventário. Fornece uma API REST documentada (OpenAPI) para CRUD de produtos, consultas por categoria e gerenciamento de estoque. Projetado para deployment em containers/Kubernetes, com foco em observabilidade e testes automatizados.
 
 ## 📚 Sumário
@@ -78,6 +82,26 @@ Microserviço de Catálogo do sistema de autoatendimento Fastfood, implementado 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [Minikube](https://minikube.sigs.k8s.io/docs/start/) (recomendado)
 - Ou qualquer cluster Kubernetes local (kind, k3s, MicroK8s, etc.)
+
+## 📊 SonarCloud - Qualidade de Código
+
+O projeto está integrado com o **SonarCloud** para análise contínua de qualidade:
+
+### Métricas Monitoradas
+
+- **Cobertura de Código**: Mínimo de cobertura definido pelos testes
+- **Code Smells**: Identificação de más práticas
+- **Bugs**: Detecção de possíveis bugs
+- **Vulnerabilidades**: Análise de segurança
+- **Duplicação**: Código duplicado
+- **Maintainability**: Índice de manutenibilidade
+
+### Visualizar Resultados
+
+Acesse o dashboard do SonarCloud em:
+- https://sonarcloud.io/project/overview?id=FIAP-SOAT-MS-PRODUCTS
+
+ADICIONAR EVIDENCIA
 
 ## ⚡ Quick Start
 
