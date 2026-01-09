@@ -36,6 +36,10 @@ jobs:
                   key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
 
             - name: Build and run tests
+              env:
+                  SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+                  SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+                  SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
               run: mvn -B -DskipTests=false verify
 
             - name: Run Checkstyle
