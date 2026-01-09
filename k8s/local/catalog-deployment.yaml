@@ -26,13 +26,13 @@ spec:
                 name: catalog-secret
           readinessProbe:
             httpGet:
-              path: /api/v1/products
+              path: /actuator/health/readiness
               port: 8080
             initialDelaySeconds: 20
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /api/v1/products
+              path: /actuator/health/liveness
               port: 8080
             initialDelaySeconds: 40
             periodSeconds: 20

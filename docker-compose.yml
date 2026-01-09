@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: FIAP-FASTFOOD-MS-PRODUCTS
+    container_name: FIAP-FASTFOOD-MS-CATALOG
     build: .
     ports:
       - "8081:8080"
@@ -20,7 +20,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_ms_products:/var/lib/postgresql/data
+      - postgres_ms_catalog:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -29,4 +29,4 @@ services:
     restart: always
 
 volumes:
-  postgres_ms_products:
+  postgres_ms_catalog:

@@ -13,7 +13,7 @@
 	<artifactId>fastfood</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>fastfood</name>
-	<description>Microservice for Products</description>
+	<description>Microservice for Catalog (products, categories, and inventory)</description>
 	<url/>
 	<licenses>
 		<license/>

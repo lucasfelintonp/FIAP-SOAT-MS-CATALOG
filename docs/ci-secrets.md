@@ -1,6 +1,6 @@
 # CI / Workflows — Secrets e permissões necessárias
 
-Este documento lista os *secrets* e configurações que você precisa adicionar no repositório `FIAP-SOAT-MS-PRODUCTS` para que os workflows funcionem corretamente.
+Este documento lista os *secrets* e configurações que você precisa adicionar no repositório `FIAP-SOAT-MS-CATALOG` para que os workflows funcionem corretamente.
 
 Resumo rápido (copiar/colar para "New repository secret")
 

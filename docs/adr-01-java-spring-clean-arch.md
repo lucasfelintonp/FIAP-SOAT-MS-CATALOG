@@ -3,7 +3,7 @@
 
 ## Contexto
 
-O microserviço `ms-products` é responsável por expor e manter o catálogo de produtos (CRUD, busca, categorias, atributos). O repositório já contém um projeto Java com Maven, e as demais equipes do workspace usam Java/Spring como padrão. É desejável uma arquitetura que facilite testabilidade, manutenção e integração com outros serviços (auth, orders, inventory).
+O microserviço `ms-catalog` é responsável por expor e manter o catálogo de produtos, categorias e inventário (CRUD, busca, categorias, atributos). O repositório já contém um projeto Java com Maven, e as demais equipes do workspace usam Java/Spring como padrão. É desejável uma arquitetura que facilite testabilidade, manutenção e integração com outros serviços (auth, orders, etc).
 
 ## Decisão
 

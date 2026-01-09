@@ -3,7 +3,7 @@
 
 ## Contexto
 
-O serviço de produtos precisa armazenar informações relacionais (produto, preços, categorias, estoque mínimo) com garantia de consistência e consultas eficientes. O repositório de infra do workspace já adota RDS/Aurora como padrão para outros serviços.
+O serviço de catálogo precisa armazenar informações relacionais (produto, preços, categorias, inventário) com garantia de consistência e consultas eficientes. O repositório de infra do workspace já adota RDS/Aurora como padrão para outros serviços.
 
 ## Decisão
 
