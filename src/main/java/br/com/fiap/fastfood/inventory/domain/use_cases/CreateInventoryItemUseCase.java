@@ -8,18 +8,34 @@ import br.com.fiap.fastfood.inventory.domain.entities.UnitEntity;
 
 import java.math.BigDecimal;
 
+/**
+ * Use case for creating inventory items.
+ */
 public class CreateInventoryItemUseCase {
 
-    InventoryGateway gateway;
+    private final InventoryGateway gateway;
 
-    public CreateInventoryItemUseCase(InventoryGateway gateway) {
+    /**
+     * Constructor.
+     *
+     * @param gateway the inventory gateway
+     */
+    public CreateInventoryItemUseCase(final InventoryGateway gateway) {
         this.gateway = gateway;
     }
 
-    public InventoryEntity run(CreateInventoryItemDTO dto) {
+    /**
+     * Executes the use case.
+     *
+     * @param dto the inventory item creation data
+     * @return the created inventory entity
+     */
+    public InventoryEntity run(final CreateInventoryItemDTO dto) {
 
         UnitEntity unit = gateway.findUnitById(dto.unitId())
-                .orElseThrow(() -> new EntityNotFoundException("Unidade não encontrada com o ID: " + dto.unitId()));
+                .orElseThrow(() -> new EntityNotFoundException(
+                    "Unidade não encontrada com o ID: " + dto.unitId()
+                ));
 
         InventoryEntity inventoryEntity = new InventoryEntity(
                 null,

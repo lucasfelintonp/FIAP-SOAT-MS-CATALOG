@@ -11,41 +11,60 @@ import br.com.fiap.fastfood.product.application.gateways.ProductGateway;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
+/**
+ * Use case for discounting inventory items by products.
+ */
 public class DiscountInventoryItemsByProductsUseCase {
 
-    InventoryProductGateway gateway;
-    InventoryGateway inventoryGateway;
-    ProductGateway productGateway;
+    private final InventoryProductGateway gateway;
+    private final InventoryGateway inventoryGateway;
+    private final ProductGateway productGateway;
 
+    /**
+     * Constructor.
+     *
+     * @param gateway the inventory product gateway
+     * @param inventoryGateway the inventory gateway
+     * @param productGateway the product gateway
+     */
     public DiscountInventoryItemsByProductsUseCase(
-        InventoryProductGateway gateway,
-        InventoryGateway inventoryGateway,
-        ProductGateway productGateway
+        final InventoryProductGateway gateway,
+        final InventoryGateway inventoryGateway,
+        final ProductGateway productGateway
     ) {
         this.gateway = gateway;
         this.inventoryGateway = inventoryGateway;
         this.productGateway = productGateway;
-
     }
 
-    public void run(List<ProductsQuantityDTO> dtos) {
+    /**
+     * Executes the use case.
+     *
+     * @param dtos the list of products and quantities to discount
+     */
+    public void run(final List<ProductsQuantityDTO> dtos) {
         for (ProductsQuantityDTO dto : dtos) {
 
             validateInputQuantity(dto.quantity());
 
-            List<InventoryProductsEntity> ingredients = gateway.getInventoryProductByProductId(dto.productId());
+            List<InventoryProductsEntity> ingredients =
+                gateway.getInventoryProductByProductId(dto.productId());
 
             for (InventoryProductsEntity ingredientRelation : ingredients) {
                 InventoryEntity inventory = ingredientRelation.getInventory();
 
                 BigDecimal currentQuantity = validateCurrentQuantity(inventory);
 
-                BigDecimal totalToSubtract = dto.quantity().multiply(ingredientRelation.getQuantity());
+                BigDecimal totalToSubtract =
+                    dto.quantity().multiply(ingredientRelation.getQuantity());
                 BigDecimal newQuantity = currentQuantity.subtract(totalToSubtract);
 
                 if (newQuantity.compareTo(BigDecimal.ZERO) < 0) {
-                    throw new InvalidQuantityException("Estoque insuficiente para o item: " + inventory.getName());
+                    throw new InvalidQuantityException(
+                        "Estoque insuficiente para o item: " + inventory.getName()
+                    );
                 }
 
                 if (newQuantity.compareTo(BigDecimal.ZERO) == 0) {
@@ -59,20 +78,24 @@ public class DiscountInventoryItemsByProductsUseCase {
         }
     }
 
-    private void validateInputQuantity(BigDecimal quantity) {
+    private void validateInputQuantity(final BigDecimal quantity) {
         if (quantity == null || quantity.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidQuantityException("A quantidade a ser descontada deve ser positiva.");
+            throw new InvalidQuantityException(
+                "A quantidade a ser descontada deve ser positiva."
+            );
         }
     }
 
-    private BigDecimal validateCurrentQuantity(InventoryEntity inventory) {
+    private BigDecimal validateCurrentQuantity(final InventoryEntity inventory) {
         if (inventory.getQuantity() == null) {
-            throw new InvalidQuantityException("Quantidade atual nula para o item: " + inventory.getName());
+            throw new InvalidQuantityException(
+                "Quantidade atual nula para o item: " + inventory.getName()
+            );
         }
         return inventory.getQuantity();
     }
 
-    private void disableDependentProducts(java.util.UUID inventoryId) {
+    private void disableDependentProducts(final UUID inventoryId) {
         gateway.getInventoryProductByInventoryId(inventoryId)
             .forEach(relation -> productGateway.disableProduct(relation.getProductId()));
     }

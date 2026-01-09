@@ -62,7 +62,7 @@ jobs:
               run: mvn checkstyle:check || true
 
             - name: Run SpotBugs
-              run: mvn com.github.spotbugs:spotbugs-maven-plugin:4.7.4.0:check || true
+              run: mvn spotbugs:check || true
 
             - name: Generate code coverage (JaCoCo)
               run: mvn jacoco:report
