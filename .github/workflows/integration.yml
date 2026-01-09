@@ -4,7 +4,7 @@ on:
     pull_request:
         branches: [ main, develop ]
     push:
-        branches: [ main, develop ]
+        branches: [ main ]
 
 env:
     AWS_REGION: us-east-1
@@ -81,19 +81,18 @@ jobs:
                     echo "Coverage: ${percent}% (covered=${covered} total=${total})"
                     if [ $percent -lt 80 ]; then echo "Coverage ${percent}% is less than required 80%"; exit 1; fi
 
-            -   name: SonarQube analysis
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-                    SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-                    SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-                run: |
-                    mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-                      -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-                      -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
-                      -Dsonar.host.url=https://sonarcloud.io \
-                      -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-                      -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+            - name: SonarQube analysis
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+              run: |
+                  mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
+                    -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+                    -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+                    -Dsonar.host.url=https://sonarcloud.io \
+                    -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                    -Dsonar.qualitygate.wait=true
 
     #            - name: OWASP Dependency Check (optional)
     #              run: mvn org.owasp:dependency-check-maven:check || true
