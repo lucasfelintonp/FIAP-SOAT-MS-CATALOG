@@ -3,7 +3,7 @@ name: CI/CD Catalog MS
 on:
     pull_request:
     push:
-        branches: [ main, develop ]
+        branches: [ main ]
 
 env:
     AWS_REGION: us-east-1
@@ -14,8 +14,7 @@ jobs:
     deploy:
         name: Build & Deploy to EKS
         runs-on: ubuntu-latest
-        if: github.event_name == 'push'
-        ## && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
         steps:
             - name: Checkout
