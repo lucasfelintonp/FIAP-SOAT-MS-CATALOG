@@ -18,6 +18,22 @@ jobs:
         strategy:
             matrix:
                 java: [23]
+
+        services:
+            postgres:
+                image: postgres:17.5-alpine3.21
+                env:
+                    POSTGRES_DB: testdb
+                    POSTGRES_USER: testuser
+                    POSTGRES_PASSWORD: testpass
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd="pg_isready -U testuser -d testdb"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=5
+
         steps:
             - name: Checkout
               uses: actions/checkout@v6
@@ -37,9 +53,9 @@ jobs:
 
             - name: Build and run tests
               env:
-                  SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-                  SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-                  SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+                  SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
+                  SPRING_DATASOURCE_USERNAME: testuser
+                  SPRING_DATASOURCE_PASSWORD: testpass
               run: mvn -B -DskipTests=false verify
 
             - name: Run Checkstyle
