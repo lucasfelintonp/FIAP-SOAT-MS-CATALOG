@@ -88,22 +88,12 @@ jobs:
                     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
                     SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
                 run: |
-                    mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN} || true
-                    # Wait for quality gate (polling)
-                    echo "Waiting for SonarQube Quality Gate..."
-                    for i in 1 2 3 4 5; do
-                      sleep 5
-                      status=$(curl -s -u ${SONAR_TOKEN}: ${SONAR_HOST_URL}/api/qualitygates/project_status?projectKey=${SONAR_PROJECT_KEY} | jq -r '.projectStatus.status') || true
-                      echo "SonarQube project status: $status"
-                      if [ "$status" = "OK" ]; then
-                        echo "Quality Gate passed"
-                        break
-                      fi
-                      if [ "$status" = "ERROR" ] || [ "$status" = "WARN" ]; then
-                        echo "Quality Gate failed: $status"
-                        exit 1
-                      fi
-                    done
+                    mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                    -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+                    -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+                    -Dsonar.host.url=https://sonarcloud.io \
+                    -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
     #            - name: OWASP Dependency Check (optional)
     #              run: mvn org.owasp:dependency-check-maven:check || true
