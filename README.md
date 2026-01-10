@@ -1,7 +1,7 @@
 # 📦 FASTFOOD - MS Catalog
 
-[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-MS-PRODUCTS&metric=alert_status)](https://sonarcloud.io/dashboard?id=FIAP-SOAT-MS-PRODUCTS)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-MS-PRODUCTS&metric=coverage)](https://sonarcloud.io/dashboard?id=FIAP-SOAT-MS-PRODUCTS)
+[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-MS-CATALOG&metric=alert_status)](https://sonarcloud.io/dashboard?id=FIAP-SOAT-MS-CATALOG)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-MS-CATALOG&metric=coverage)](https://sonarcloud.io/dashboard?id=FIAP-SOAT-MS-CATALOG)
 
 
 Microserviço de Catálogo do sistema de autoatendimento Fastfood, implementado em Java 23 com Spring Boot e estruturado conforme os princípios da Clean Architecture. Responsável pela gestão completa do catálogo de produtos, categorias e inventário. Fornece uma API REST documentada (OpenAPI) para CRUD de produtos, consultas por categoria e gerenciamento de estoque. Projetado para deployment em containers/Kubernetes, com foco em observabilidade e testes automatizados.
@@ -99,7 +99,7 @@ O projeto está integrado com o **SonarCloud** para análise contínua de qualid
 ### Visualizar Resultados
 
 Acesse o dashboard do SonarCloud em:
-- https://sonarcloud.io/project/overview?id=FIAP-SOAT-MS-PRODUCTS
+- https://sonarcloud.io/project/overview?id=FIAP-SOAT-MS-CATALOG
 
 ADICIONAR EVIDENCIA
 
