@@ -51,13 +51,6 @@ jobs:
                     path: ~/.m2/repository
                     key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
 
-            -   name: Run Flyway Migrations
-                env:
-                    SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
-                    SPRING_DATASOURCE_USERNAME: testuser
-                    SPRING_DATASOURCE_PASSWORD: testpass
-                run: mvn flyway:migrate
-
             -   name: Build and run tests
                 env:
                     SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
