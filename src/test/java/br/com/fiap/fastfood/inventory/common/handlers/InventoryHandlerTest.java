@@ -42,7 +42,8 @@ class InventoryHandlerTest {
 
     @Test
     void searchInventoryReturnsListAnd200() {
-        GetInventoryDTO item = new GetInventoryDTO(
+        // Arrange
+        GetInventoryDTO item1 = new GetInventoryDTO(
             UUID.randomUUID(),
             "Carne",
             unitDTO,
@@ -53,17 +54,32 @@ class InventoryHandlerTest {
             LocalDateTime.now()
         );
 
-        when(inventoryDatasource.findAll()).thenReturn(List.of(item));
+        GetInventoryDTO item2 = new GetInventoryDTO(
+            UUID.randomUUID(),
+            "Pão",
+            unitDTO,
+            BigDecimal.valueOf(20.00),
+            BigDecimal.valueOf(5.00),
+            "Fornecedor X",
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        );
 
+        when(inventoryDatasource.findAll()).thenReturn(List.of(item1, item2));
+
+        // Act
         var response = handler.searchInventory();
 
+        // Assert
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
         verify(inventoryDatasource, times(1)).findAll();
     }
 
     @Test
     void createInventoryItemReturnsCreatedAnd201() {
+        // Arrange
         CreateInventoryItemDTO inputDto = new CreateInventoryItemDTO(
             "Pão", 1, new BigDecimal("50.00"), "Fornecedor X"
         );
@@ -84,27 +100,70 @@ class InventoryHandlerTest {
 
         when(inventoryDatasource.create(any(GetInventoryDTO.class))).thenReturn(createdDto);
 
+        // Act
         var response = handler.createInventoryItem(inputDto);
 
+        // Assert
         assertEquals(201, response.getStatusCode().value());
         assertEquals("Pão", response.getBody().name());
         assertNotNull(response.getBody().unit());
+        verify(inventoryDatasource, times(1)).create(any());
+    }
+
+    @Test
+    void createInventoryItemWithDifferentData_shouldReturn201() {
+        // Arrange
+        CreateInventoryItemDTO dto = new CreateInventoryItemDTO(
+            "Tomato",
+            1,
+            BigDecimal.valueOf(5.00),
+            "Fresh tomatoes"
+        );
+
+        GetInventoryDTO expectedInventory = new GetInventoryDTO(
+            UUID.randomUUID(),
+            "Tomato",
+            unitDTO,
+            BigDecimal.ZERO,
+            BigDecimal.valueOf(5.00),
+            "Fresh tomatoes",
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        );
+
+        when(inventoryDatasource.findUnitById(1)).thenReturn(java.util.Optional.of(unitDTO));
+        when(inventoryDatasource.create(any())).thenReturn(expectedInventory);
+
+        // Act
+        var response = handler.createInventoryItem(dto);
+
+        // Assert
+        assertEquals(201, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        assertEquals("Tomato", response.getBody().name());
+        assertEquals(unitDTO, response.getBody().unit());
+        assertEquals(BigDecimal.valueOf(5.00), response.getBody().minimum_quantity());
+        verify(inventoryDatasource, times(1)).create(any());
     }
 
     @Test
     void discountInventoryItemsByProductsReturns200() {
+        // Arrange
         List<ProductsQuantityDTO> dtos = List.of(
             new ProductsQuantityDTO(UUID.randomUUID(), new BigDecimal("2.00"))
         );
 
+        // Act
         var response = handler.discountInventoryItemsByProducts(dtos);
 
+        // Assert
         assertEquals(200, response.getStatusCode().value());
         verify(inventoryProductsDatasource, atLeastOnce()).getInventoryProductByProductId(any());
     }
 
     @Test
     void createInventoryEntryReturns201() {
+        // Arrange
         UUID inventoryId = UUID.randomUUID();
         CreateInventoryEntryDTO inputDto = new CreateInventoryEntryDTO(
             inventoryId,
@@ -131,9 +190,50 @@ class InventoryHandlerTest {
         when(inventoryDatasource.createInventoryEntry(any(CreateInventoryEntryDTO.class)))
             .thenReturn(mockResult);
 
+        // Act
         var response = handler.createInventoryEntry(inputDto);
 
+        // Assert
         assertEquals(201, response.getStatusCode().value());
+        verify(inventoryDatasource, times(1)).createInventoryEntry(any(CreateInventoryEntryDTO.class));
+    }
+
+    @Test
+    void createInventoryEntryWithDifferentExpiration_shouldReturn201() {
+        // Arrange
+        UUID inventoryId = UUID.randomUUID();
+        CreateInventoryEntryDTO dto = new CreateInventoryEntryDTO(
+            inventoryId,
+            BigDecimal.valueOf(10.00),
+            LocalDate.now().plusDays(30),
+            LocalDate.now()
+        );
+
+        GetInventoryDTO inventoryDTO = new GetInventoryDTO(
+            inventoryId, "Item", unitDTO, new BigDecimal("50.00"),
+            new BigDecimal("10.00"), "", LocalDateTime.now(), LocalDateTime.now()
+        );
+
+        when(inventoryDatasource.getById(inventoryId)).thenReturn(inventoryDTO);
+
+        GetInventoryEntryDTO mockResult = new GetInventoryEntryDTO(
+            UUID.randomUUID(),
+            inventoryDTO,
+            BigDecimal.valueOf(10.00),
+            LocalDate.now().plusDays(30),
+            LocalDate.now()
+        );
+
+        when(inventoryDatasource.createInventoryEntry(any(CreateInventoryEntryDTO.class)))
+            .thenReturn(mockResult);
+
+        // Act
+        var response = handler.createInventoryEntry(dto);
+
+        // Assert
+        assertEquals(201, response.getStatusCode().value());
+        assertNotNull(mockResult.inventory());
+        assertEquals(BigDecimal.valueOf(10.00), mockResult.quantity());
         verify(inventoryDatasource, times(1)).createInventoryEntry(any(CreateInventoryEntryDTO.class));
     }
 }

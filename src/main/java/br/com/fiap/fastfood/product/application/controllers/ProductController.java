@@ -50,12 +50,15 @@ public class ProductController {
         return ProductPresenter.findAll(products);
     }
 
-    public List<ProductDTO> findAllByIds(List<UUID> productIds) {
+    public List<ProductDTO> findAllByIds(final List<UUID> productIds) {
         ProductGateway productGateway = new ProductGateway(productDatasource);
 
         GetProductsByIdsUseCase getProductsByIdsUseCase = new GetProductsByIdsUseCase(productGateway);
 
-        List<ProductEntity> products = getProductsByIdsUseCase.run(productIds);
+        // Defensive copy to prevent internal representation exposure
+        List<ProductEntity> products = getProductsByIdsUseCase.run(
+            productIds != null ? List.copyOf(productIds) : List.of()
+        );
 
         return ProductPresenter.findAll(products);
     }

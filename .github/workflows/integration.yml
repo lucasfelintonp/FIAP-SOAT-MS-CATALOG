@@ -81,6 +81,13 @@ jobs:
                     echo "Coverage: ${percent}% (covered=${covered} total=${total})"
                     if [ $percent -lt 80 ]; then echo "Coverage ${percent}% is less than required 80%"; exit 1; fi
 
+            -   name: Upload JaCoCo Coverage Report
+                uses: actions/upload-artifact@v4
+                with:
+                    name: jacoco-report
+                    path: target/site/jacoco/
+                    retention-days: 30
+
             -   name: SonarCloud Scan
                 uses: SonarSource/sonarcloud-github-action@v3.1
                 env:
@@ -93,6 +100,9 @@ jobs:
                         -Dsonar.host.url=https://sonarcloud.io
                         -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
                         -Dsonar.java.binaries=target/classes
+                        -Dsonar.sources=src/main/java
+                        -Dsonar.tests=src/test/java
+                        -Dsonar.java.source=23
 
     #            - name: OWASP Dependency Check (optional)
     #              run: mvn org.owasp:dependency-check-maven:check || true
@@ -105,7 +115,7 @@ jobs:
 
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
 
             -   name: Configure AWS credentials
                 uses: aws-actions/configure-aws-credentials@v4
