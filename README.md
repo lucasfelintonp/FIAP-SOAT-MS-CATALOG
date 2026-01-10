@@ -89,7 +89,7 @@ O projeto está integrado com o **SonarCloud** para análise contínua de qualid
 
 ### Métricas Monitoradas
 
-- **Cobertura de Código**: Mínimo de cobertura definido pelos testes
+- **Cobertura de Código**: Mínimo de 80% de cobertura definido pelos testes automatizados
 - **Code Smells**: Identificação de más práticas
 - **Bugs**: Detecção de possíveis bugs
 - **Vulnerabilidades**: Análise de segurança
