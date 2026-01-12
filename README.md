@@ -103,12 +103,6 @@ Acesse o dashboard do SonarCloud em:
 
 ADICIONAR EVIDENCIA
 
-## ⚡ Quick Start
-
-### Opção 1: Kubernetes (Recomendado para testes completos)
-
-Iniciará aplicação com banco de dados e persistência.
-
 **Windows:**
 
 ```powershell
