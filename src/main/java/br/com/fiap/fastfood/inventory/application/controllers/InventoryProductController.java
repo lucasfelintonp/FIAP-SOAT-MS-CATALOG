@@ -31,7 +31,7 @@ public class InventoryProductController {
         this.productDatasource = productDatasource;
     }
 
-    public void discountInventoryItemsByProducts(List<ProductsQuantityDTO> dto) {
+    public void discountInventoryItemsByProducts(final List<ProductsQuantityDTO> dto) {
         InventoryProductGateway gateway = new InventoryProductGateway(datasource);
         InventoryGateway inventoryGateway = new InventoryGateway(inventoryDatasource);
         ProductGateway productGateway = new ProductGateway(productDatasource);
@@ -39,7 +39,10 @@ public class InventoryProductController {
         DiscountInventoryItemsByProductsUseCase discountInventoryItemsByProductsUseCase =
             new DiscountInventoryItemsByProductsUseCase(gateway, inventoryGateway, productGateway);
 
-        discountInventoryItemsByProductsUseCase.run(dto);
+        // Defensive copy to prevent internal representation exposure
+        discountInventoryItemsByProductsUseCase.run(
+            dto != null ? List.copyOf(dto) : List.of()
+        );
     }
 
     public void createInventoryEntry(CreateInventoryEntryDTO dto) {

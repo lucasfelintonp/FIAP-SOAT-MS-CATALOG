@@ -11,49 +11,64 @@ import static org.junit.jupiter.api.Assertions.*;
 class ProductCategoryPresenterTest {
 
     @Test
-    void create_shouldMapEntityToDto_success() {
-        var entity = new ProductCategoryEntity(1, "Bebidas");
+    void create_shouldMapEntityToDTO() {
+        // Arrange
+        ProductCategoryEntity entity = new ProductCategoryEntity(1, "Bebidas");
 
-        ProductCategoryDTO dto = ProductCategoryPresenter.create(entity);
+        // Act
+        ProductCategoryDTO result = ProductCategoryPresenter.create(entity);
 
-        assertNotNull(dto);
-        assertEquals(1, dto.id());
-        assertEquals("Bebidas", dto.name());
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.id());
+        assertEquals("Bebidas", result.name());
     }
 
     @Test
-    void create_null_shouldThrowNullPointerException() {
-        assertThrows(NullPointerException.class, () -> ProductCategoryPresenter.create(null));
+    void create_shouldHandleNullId() {
+        // Arrange
+        ProductCategoryEntity entity = new ProductCategoryEntity(null, "Test");
+
+        // Act
+        ProductCategoryDTO result = ProductCategoryPresenter.create(entity);
+
+        // Assert
+        assertNotNull(result);
+        assertNull(result.id());
+        assertEquals("Test", result.name());
     }
 
     @Test
-    void findAll_shouldMapEntitiesToDtos_success() {
-        var entities = List.of(
+    void findAll_shouldMapListOfEntitiesToListOfDTOs() {
+        // Arrange
+        List<ProductCategoryEntity> entities = List.of(
             new ProductCategoryEntity(1, "Bebidas"),
-            new ProductCategoryEntity(2, "Lanches")
+            new ProductCategoryEntity(2, "Lanches"),
+            new ProductCategoryEntity(3, "Sobremesas")
         );
 
-        var dtos = ProductCategoryPresenter.findAll(entities);
+        // Act
+        List<ProductCategoryDTO> result = ProductCategoryPresenter.findAll(entities);
 
-        assertNotNull(dtos);
-        assertEquals(2, dtos.size());
-        assertEquals("Bebidas", dtos.get(0).name());
-        assertEquals("Lanches", dtos.get(1).name());
+        // Assert
+        assertNotNull(result);
+        assertEquals(3, result.size());
+        assertEquals("Bebidas", result.get(0).name());
+        assertEquals("Lanches", result.get(1).name());
+        assertEquals("Sobremesas", result.get(2).name());
     }
 
     @Test
-    void findAll_emptyList_shouldReturnEmptyList() {
-        var entities = List.<ProductCategoryEntity>of();
+    void findAll_shouldHandleEmptyList() {
+        // Arrange
+        List<ProductCategoryEntity> entities = List.of();
 
-        var dtos = ProductCategoryPresenter.findAll(entities);
+        // Act
+        List<ProductCategoryDTO> result = ProductCategoryPresenter.findAll(entities);
 
-        assertNotNull(dtos);
-        assertTrue(dtos.isEmpty());
-    }
-
-    @Test
-    void findAll_null_shouldThrowNullPointerException() {
-        assertThrows(NullPointerException.class, () -> ProductCategoryPresenter.findAll(null));
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 }
 
