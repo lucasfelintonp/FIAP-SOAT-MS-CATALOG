@@ -11,7 +11,7 @@
     </parent>
     <groupId>br.com.fiap</groupId>
     <artifactId>fastfood</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>fastfood</name>
     <description>Microservice for Catalog (products, categories, and inventory)</description>
     <url/>
